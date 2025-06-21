@@ -1,0 +1,4905 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>yolo</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/night.min.css"
+      id="theme"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://picture-search.tiangong.cn/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .font-gzd {
+        font-family: "XiqueGuzidian", serif;
+      }
+
+      .font-fzk {
+        font-family: "FZKai", serif;
+      }
+
+      .font-xqs {
+        font-family: "optima", "XiqueSong", serif;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 200px 1fr; /* 左栏80px，右栏自适应 */
+        gap: 1rem;
+        align-items: center;
+      }
+      .text-grid-container {
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(5, 1fr);
+        gap: 15px;
+        height: 100%;
+      }
+      .vertical-title-layout {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 50px;
+      }
+      .vertical-title {
+        writing-mode: vertical-lr; /* Vertical text, right-to-left */
+        text-orientation: mixed;
+        font-size: 1.8em;
+      }
+
+      .reveal p {
+        line-height: 1.3;
+        /* 默认值为 1.2 */
+        margin-bottom: 0.3em !important;
+      }
+
+      .small-target {
+        width: 8px;
+        height: 8px;
+        background-color: #facc15;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #facc15;
+      }
+
+      .large-aspect {
+        width: 100px;
+        height: 8px;
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        border-radius: 4px;
+      }
+
+      .info-asymmetry {
+        width: 100px;
+        height: 30px;
+        position: relative;
+      }
+
+      .wavelength {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 70%;
+        background: linear-gradient(90deg, #facc15, #eab308, #facc15);
+        border-radius: 4px 4px 0 0;
+      }
+
+      .spatial {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 30%;
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        border-radius: 0 0 4px 4px;
+      }
+
+      /* Apply Exo 2 font and then your custom Chinese font as fallbacks */
+      .reveal .slides {
+        font-family: "optima", "XiqueSong", "FZkai", "Noto Sans SC",
+          "Microsoft YaHei", "PingFang SC", sans-serif;
+        --r-main-font-size: 24px;
+      }
+
+      .reveal .slides h1 {
+        font-family: "XiqueGuzidian", "Noto Sans SC", "Microsoft YaHei",
+          "PingFang SC", sans-serif;
+        font-size: 2em;
+      }
+
+      .reveal .slides h2 {
+        font-family: "Exo 2", "XiqueGuzidian", "Noto Sans SC", "Microsoft YaHei",
+          "PingFang SC", sans-serif;
+        font-size: 1.6em;
+      }
+
+      .reveal .slides h3 {
+        font-family: "XiqueGuzidian", "Noto Sans SC", "Microsoft YaHei",
+          "PingFang SC", sans-serif;
+        font-size: 1.2em;
+      }
+
+      .reveal .slides h4 {
+        font-family: "XiqueGuzidian", "Noto Sans SC", "Microsoft YaHei",
+          "PingFang SC", sans-serif;
+        font-size: 0.8em;
+      }
+
+      /* Global slide adjustments for title positioning */
+      .reveal .slides section {
+        justify-content: flex-start !important;
+        /* Override default centering to align content to the top */
+        padding-top: 8px;
+        /* Add padding to the top */
+      }
+      .reveal .slides section.center-content {
+        justify-content: center !important;
+      }
+
+
+      /* Starry background container for ALL slides */
+      #star-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      /* Individual star styling for the global background */
+      .star {
+        position: absolute;
+        background-color: white;
+        border-radius: 50%;
+        animation: twinkle 3s infinite ease-in-out;
+      }
+
+      /* Twinkle animation keyframes */
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.1;
+          transform: scale(0.8);
+        }
+
+        50% {
+          opacity: 0.8;
+          transform: scale(1.2);
+        }
+      }
+
+      /* Styles for the stripe animation (subsequent slides) */
+      .reveal .slides .stripe-figure-stage {
+        margin: 10px auto;
+        display: grid;
+        position: relative;
+      }
+
+      .reveal .slides .stripe-figure-stage > div[data-id^="h_s"] {
+        width: 100%;
+        height: 100%;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+        /* background-size is now handled by inline styles for better animation control */
+        background-position: center;
+      }
+
+      /* General slide styling for animation slides */
+      .reveal .slides section[data-auto-animate] h2 {
+        margin-bottom: 15px;
+      }
+
+      .reveal .slides section[data-auto-animate] p.slide-caption {
+        margin-top: 15px;
+        font-size: 0.85em;
+      }
+
+      /* Individual Point Card Styling with Hover Effect */
+      .item-card {
+        background-color: rgba(10, 25, 47, 0.8);
+        border-radius: 0.75rem; /* 12px */
+        padding: 1.5rem; /* 24px */
+        transition: all 0.3s ease-in-out;
+        border-left: 4px solid transparent;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .item-card:hover {
+        transform: translateY(-8px) scale(1.03);
+        background-color: rgba(32, 76, 142, 0.9);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+        border-left-color: #fff564;
+      }
+
+      .item-card2 {
+        background-color: rgba(10, 25, 47, 0.8);
+        border-radius: 0.75rem; /* 12px */
+        padding: 1.5rem; /* 24px */
+        transition: all 0.3s ease-in-out;
+        border-left: 4px solid transparent;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .item-card2:hover {
+        transform: translateY(-8px) scale(1.03);
+        background-color: #39c2d76a;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+        border-left-color: #6498ff;
+      }
+
+      .item-card3 {
+        background-color: rgba(10, 25, 47, 0.8);
+        border-radius: 0.75rem; /* 12px */
+        padding: 1.5rem; /* 24px */
+        transition: all 0.3s ease-in-out;
+        border-left: 4px solid transparent;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .item-card3:hover {
+        transform: translateY(-8px) scale(1.03);
+        background-color: #fa807259;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+        border-left-color: #6498ff;
+      }
+
+      /* Network Diagram Styling */
+      .network-diagram {
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-start;
+        width: 100%;
+        margin-top: 2rem;
+      }
+      .network-component {
+        background-color: rgba(10, 25, 47, 0.8);
+        border: 2px solid #64ffda;
+        border-radius: 8px;
+        padding: 1.5rem;
+        width: 30%;
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+      .network-component:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 0 25px rgba(100, 255, 218, 0.6);
+        background-color: rgba(32, 76, 142, 0.9);
+      }
+      .network-arrow {
+        font-size: 3rem;
+        color: #64ffda;
+        align-self: center;
+        padding: 0 1rem;
+      }
+
+      .static-figure-container {
+        margin-top: 20px;
+        display: flex;
+        /* Added to center the image */
+        justify-content: center;
+        /* Added to center the image */
+      }
+
+      .static-figure-container img {
+        max-height: 500px;
+        /* Ensure figure does not get too tall */
+        border: 2px solid rgba(62, 147, 251, 0.896);
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(100, 255, 218, 0.3);
+      }
+
+      /* Two Column Layout for Static Slide */
+      .two-column-layout {
+        display: flex;
+        flex-direction: row;
+        gap: 40px;
+        width: 100%;
+        align-items: flex-start;
+        /* Align items to the top of the container */
+        margin-top: 20px;
+      }
+
+      .column-left {
+        flex-basis: 45%;
+      }
+
+      .column-right {
+        flex-basis: 55%;
+        text-align: left;
+      }
+
+      .column-right p {
+        font-size: 0.9em;
+        line-height: 1.6;
+      }
+
+      .spectrum-line {
+        height: 80px;
+        background: linear-gradient(
+          90deg,
+          rgba(148, 0, 211, 0.7) 0%,
+          rgba(75, 0, 130, 0.7) 16%,
+          rgba(0, 0, 255, 0.7) 33%,
+          rgba(0, 255, 0, 0.7) 50%,
+          rgba(255, 255, 0, 0.7) 66%,
+          rgba(255, 165, 0, 0.7) 83%,
+          rgba(255, 0, 0, 0.7) 100%
+        );
+        border-radius: 2px;
+      }
+
+      .channel-label {
+        position: absolute;
+        font-size: 14px;
+        color: white;
+        text-align: center;
+      }
+
+      .icon-container {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin-top: -30px;
+        margin-left: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .container {
+        display: flex;
+        /* 启用弹性布局 */
+        justify-content: space-between;
+        /* 子项水平等间距 */
+        align-items: center;
+        /* 子项垂直居中 */
+        min-height: 10vh;
+        border: 2px;
+        /* 可视化容器边界 */
+        padding: 20px;
+        /* 内部留白 */
+      }
+
+      .advantage-item {
+        transition: all 0.3s ease;
+        margin-left: 20px;
+        padding-left: 1rem;
+      }
+
+      .advantage-item:hover {
+        transform: translateY(-5px);
+        border: 3px solid #ffd9009f;
+        background-color: rgba(131, 157, 228, 0.739);
+        border-radius: 12px;
+      }
+
+      .detector-diagram {
+        position: relative;
+        height: 50px;
+        width: 100%;
+        margin: 10px 0;
+      }
+
+      .detector-stage {
+        position: absolute;
+        height: 40px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+      }
+
+      .arrow {
+        position: absolute;
+        height: 2px;
+        background-color: rgba(255, 215, 0, 0.7);
+      }
+
+      .arrow:after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: -4px;
+        border-style: solid;
+        border-width: 5px 0 5px 8px;
+        transition: transform 0.3s ease;
+        border-color: transparent transparent transparent rgba(255, 215, 0, 0.7);
+      }
+
+      .process-step {
+        position: relative;
+        padding-left: 5rem;
+      }
+
+      .process-step:before {
+        content: "";
+        position: absolute;
+        left: 10px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: rgba(255, 215, 0, 0.5);
+      }
+
+      .process-step:last-child:before {
+        height: 50%;
+      }
+
+      .process-step:after {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 10px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #ffd700;
+      }
+
+      .image-processing {
+        height: 80px;
+        position: relative;
+
+        border-radius: 4px;
+      }
+
+      .original-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          rgba(50, 50, 80, 0.8) 0%,
+          rgba(100, 100, 150, 0.6) 50%,
+          rgba(50, 50, 80, 0.8) 100%
+        );
+      }
+
+      .processed-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          rgba(30, 30, 60, 0.9) 0%,
+          rgba(255, 215, 0, 0.7) 50%,
+          rgba(30, 30, 60, 0.9) 100%
+        );
+        clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+      }
+
+      .divider {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 2px;
+        height: 100%;
+        background-color: white;
+      }
+
+      .arrow-divider {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 20px;
+        height: 20px;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+      }
+
+      .figure-with-caption {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .one-column-layout-fade {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .one-column-layout-fade p {
+        transition: opacity 1s ease-in-out;
+      }
+
+      /* Style for the fade-in/out image container */
+      .two-column-layout-fade {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        width: 100%;
+        padding: 0 20px;
+      }
+
+      .two-column-layout-fade p {
+        transition: opacity 0.1s ease-in-out;
+      }
+
+      .three-column-layout-fade {
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-start;
+        gap: 20px;
+        width: 100%;
+      }
+
+      .three-column-layout-fade p {
+        transition: opacity 0.1s ease-in-out;
+      }
+
+      /* Style for the fade-in/out image container */
+      .image-placeholder-1 {
+        position: relative;
+        width: 600px; /* Adjust size as needed */
+        height: 600px; /* Adjust size as needed */
+        margin: 20px auto;
+      }
+      .image-placeholder-1 img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 5px;
+        border: 2px solid rgba(100, 255, 218, 0.5);
+      }
+
+      .image-placeholder-2 {
+        position: relative;
+        width: 600px;
+        height: 600px;
+      }
+      .image-placeholder-2 img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 5px;
+        border: 2px solid rgba(100, 255, 218, 0.5);
+      }
+
+      .image-placeholder-3 {
+        position: relative;
+        width: 450px; /* Adjust width as needed */
+        height: 450px; /* Adjust height as needed */
+      }
+
+      .image-placeholder-3 img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 5px;
+        border: 2px solid rgba(100, 255, 218, 0.5);
+        /* Opacity is controlled by inline styles for animation */
+      }
+
+      /* Styles for the IoU slide */
+      .iou-container {
+        display: flex;
+        gap: 40px;
+        align-items: flex-start;
+        width: 100%;
+      }
+
+      .iou-explanation {
+        flex: 1;
+        text-align: left;
+      }
+      .iou-visualization {
+        flex: 1;
+        position: relative;
+        height: 280px; /* Adjust as needed */
+        margin-top: 20px;
+      }
+      .iou-box {
+        position: absolute;
+        border-radius: 8px;
+      }
+      .ground-truth-box {
+        border: 3px solid #64ffda; /* Teal */
+        width: 100px;
+        height: 100px;
+        top: 20px;
+        left: 50px;
+      }
+
+      .ground-truth-box2 {
+        border: 3px solid #64ffda; /* Teal */
+        background-color: #64ffda;
+        width: 100px;
+        height: 100px;
+        top: 170px;
+        left: 50px;
+      }
+      .prediction-box {
+        border: 3px dashed #64ffda; /* Yellow */
+        width: 100px;
+        height: 100px;
+        top: 40px;
+        left: 70px;
+      }
+
+      .prediction-box2 {
+        border: 3px dashed #64ffda;
+        background-color: #64ffda; /* Yellow */
+        width: 100px;
+        height: 100px;
+        top: 190px;
+        left: 70px;
+      }
+
+      .intersection-area {
+        position: absolute;
+        background-color: #64ffda;
+        top: 40px;
+        left: 70px;
+        width: 80px;
+        height: 80px;
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-top: 20px;
+      }
+
+      /* --- 图片点击放大效果 --- */
+
+      /* 为可点击放大的图片添加指针样式 */
+      .reveal .slides img.magnifiable,
+      .reveal .slides .magnifiable-container {
+        cursor: zoom-in;
+      }
+
+      /* 放大图片的容器/遮罩层 */
+      .magnify-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8); /* 半透明黑色背景 */
+        z-index: 99;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: zoom-out;
+        /* 淡入动画 */
+        animation: fadeIn 0.3s ease-in-out;
+      }
+
+      /* 放大后的图片样式 */
+      .magnify-overlay img {
+        height: 900px; /* 目标高度 */
+        width: auto;
+        max-width: 95vw; /* 防止超宽 */
+        max-height: 95vh; /* 防止超高 */
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        object-fit: contain;
+        cursor: default; /* 放大后的图片恢复默认鼠标样式 */
+      }
+
+            .credits-content h3 {
+        font-size: 2.2em;
+        color: #facc15; /* yellow-300 */
+        margin-top: 60px;
+        margin-bottom: 15px;
+      }
+
+      .credits-content p {
+        font-size: 1.6em;
+        line-height: 1.6;
+        margin-bottom: 2px;
+      }
+
+      .credits-content .role {
+        color: #9ca3af; /* gray-400 */
+        font-size: 1.0em;
+        margin-bottom: 25px;
+      }
+      .credits-content .funding-item {
+        font-size: 1.2em;
+        padding: 0 10%;
+        margin-bottom: 15px;
+        line-height: 1.5;
+        text-align: center;
+      }
+
+      /* --- Credits Roll Specific Styling --- */
+      .credits-roll-container {
+        position: relative;
+        width: 100%;
+        height: 800px; /* Defines the scrolling area height */
+        overflow: hidden;
+      }
+
+      .credits-content {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        animation: scroll-up 35s;
+        /* The animation is now applied via Javascript */
+      }
+      
+      @keyframes scroll-up-in-slide {
+          from {
+              top: 100%;
+          }
+          to {
+              top: -380%; /* Adjusted to ensure all content scrolls off screen */
+          }
+      }
+
+      /* 淡入动画的关键帧 */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Gemini API Feature Styling */
+      .gemini-button {
+        background-color: #64ffda;
+        color: #0a192f;
+        border: none;
+        padding: 8px 16px;
+        font-family: "Exo 2", "MyCustomChineseFont", "Noto Sans SC",
+          "Microsoft YaHei", "PingFang SC", sans-serif;
+        font-size: 0.7em;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        margin-top: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .gemini-button:hover {
+        background-color: #8affea;
+        transform: translateY(-2px);
+      }
+
+      .gemini-button:active {
+        transform: translateY(0px);
+      }
+
+      #gemini-response-container {
+        margin-top: 10px;
+        padding: 12px;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 5px;
+        min-height: 40px;
+        width: 80%;
+        max-width: 700px;
+        font-size: 0.7em;
+        color: #e6f1ff;
+        border: 1px solid rgba(100, 255, 218, 0.2);
+        text-align: left;
+        line-height: 1.5;
+      }
+
+      #gemini-response-container.loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #64ffda;
+      }
+
+      .spinner {
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border-left-color: #64ffda;
+        animation: spin 1s ease infinite;
+        margin-right: 8px;
+      }
+
+      /* YOLO Easter Egg Styling */
+      .yolo-box {
+        position: absolute;
+        border: 1px solid #64ffda; /* Teal color from reference */
+        box-sizing: border-box;
+        opacity: 0;
+        transition: opacity 0.4s ease-in-out;
+        pointer-events: none; /* Make boxes unclickable */
+      }
+      .yolo-label {
+        position: absolute;
+        top: -18px; /* Position label above the box */
+        left: -1px;
+        background-color: #64ffda;
+        color: #0a192f;
+        padding: 1px 4px;
+        font-size: 10px;
+        font-weight: bold;
+        font-family: monospace;
+        white-space: nowrap;
+        border-radius: 2px;
+      }
+
+      /* Countdown Timer Styling */
+      #yolo-countdown {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 250px;
+        font-weight: bold;
+        color: #facc15;
+        text-shadow: 0 0 30px #facc15, 0 0 50px #facc15;
+        z-index: 100;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+        pointer-events: none;
+      }
+      
+      /* --- FIX for controls --- */
+      .reveal .controls {
+          z-index: 101 !important;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Starry background div for ALL slides -->
+    <div id="star-bg"></div>
+
+    <!-- Reveal.js slides -->
+    <div class="reveal">
+      <div class="slides">
+        <!-- New First Slide from page_1.html -->
+        <section data-transition="zoom">
+          <!-- Main Content for the new first slide -->
+          <div style="position: relative; z-index: 1">
+            <div class="w-full text-center mb-8">
+              <h1>YOLO模型在天文光谱数据中的应用与创新</h1>
+              <h3>基于CSST无缝光谱数据的目标检测与分类</h3>
+            </div>
+            <br />
+            <div class="flex justify-center items-center space-x-16 my-8">
+              <div class="text-center">
+                <div class="text-yellow-300 text-4xl mb-3">
+                  <i class="fas fa-satellite"></i>
+                </div>
+                <p class="text-3xl text-gray-300">CSST无缝光谱分析</p>
+              </div>
+              <div class="text-center">
+                <div class="text-yellow-300 text-4xl mb-3">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <p class="text-3xl text-gray-300">深度学习检测框架</p>
+              </div>
+              <div class="text-center">
+                <div class="text-yellow-300 text-4xl mb-3">
+                  <i class="fas fa-star"></i>
+                </div>
+                <p class="text-3xl text-gray-300">天体目标精确分类</p>
+              </div>
+            </div>
+            <br />
+            <div class="w-full text-center mt-12">
+              <p class="text-3xl text-gray-300 mb-2">周颖颖</p>
+              <p class="text-2xl text-gray-300 mb-2">
+                合作者：刘超，田浩，张鑫，李楠
+              </p>
+
+              <p class="text-xl text-gray-400">中国科学院国家天文台</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="mb-6 text-center">
+            <h2>CSST无缝光谱数据简介</h2>
+          </div>
+          <div class="grid grid-cols-2 grid-rows-2 flex">
+            <div class="h-1/2 pr-4">
+              <div class="item-card2 p-6 mb-6">
+                <h3 class="text-xl font-semibold text-yellow-300 mb-3">
+                  <i class="fas fa-rainbow mr-2"></i>观测波段
+                </h3>
+                <p class="text-blue-200 mb-4 text-l">
+                  CSST无缝光谱覆盖从近紫外到近红外的广阔波段（255-1000nm）
+                </p>
+                <div class="relative h-20 mb-3">
+                  <div
+                    class="spectrum-line absolute top-0 left-0 right-0"
+                  ></div>
+                  <div class="absolute top-0 left-0 w-full">
+                    <div
+                      style="position: absolute; left: 0%; width: 25%; top: 0px"
+                    >
+                      <div
+                        class="h-8 border-l border-r border-white border-opacity-30"
+                      ></div>
+                      <div class="channel-label">GU通道<br />(255–420 nm)</div>
+                    </div>
+                    <div
+                      style="
+                        position: absolute;
+                        left: 25%;
+                        width: 30%;
+                        top: 0px;
+                      "
+                    >
+                      <div
+                        class="h-8 border-l border-r border-white border-opacity-30"
+                      ></div>
+                      <div class="channel-label">GV通道<br />(400–650 nm)</div>
+                    </div>
+                    <div
+                      style="
+                        position: absolute;
+                        left: 55%;
+                        width: 45%;
+                        top: 0px;
+                      "
+                    >
+                      <div
+                        class="h-8 border-l border-r border-white border-opacity-30"
+                      ></div>
+                      <div class="channel-label">GI通道<br />(620–1000 nm)</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="item-card2 p-6 mb-6">
+                <h3 class="text-xl font-semibold text-green-400 mb-3">
+                  <i class="fas fa-database mr-2"></i>数据规模
+                </h3>
+                <div style="margin-top: 50px"></div>
+                <ul class="text-white space-y-2 text-3xl text-center">
+                  <li class="flex items-center justify-center">
+                    <i class="fas fa-chart-area text-purple-300 mt-1 mr-3"></i
+                    ><span
+                      >覆盖约<span class="text-yellow-300 font-bold"
+                        >17,500</span
+                      >平方度巡天</span
+                    >
+                  </li>
+                  <li class="flex items-center justify-center">
+                    <i class="fas fa-search-plus text-purple-300 mt-1 mr-3"></i
+                    ><span
+                      ><span class="text-yellow-300 font-bold">400</span
+                      >平方度的超深场观测</span
+                    >
+                  </li>
+
+                  <li class="flex items-center justify-center">
+                    <i class="fas fa-hdd text-purple-300 mt-1 mr-3"></i
+                    ><span
+                      >预计产生<span class="text-yellow-300 font-bold">PB</span
+                      >量级的数据</span
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="h-1/2 pl-4">
+              <div class="item-card2 p-6 mb-6">
+                <h3 class="text-xl font-semibold text-purple-400 mb-3">
+                  <i class="fas fa-microscope mr-2"></i>分辨率
+                </h3>
+                <div class="flex justify-between">
+                  <div
+                    class="flex flex-col items-center bg-blue-900 bg-opacity-40 p-4 rounded-lg w-5/12"
+                  >
+                    <i
+                      class="fas fa-grip-lines text-2xl text-blue-300 mb-2"
+                    ></i>
+                    <div class="text-center">
+                      <p class="text-white font-bold">光谱分辨率</p>
+                      <p class="text-yellow-300 text-2xl">R ≲ 200</p>
+                      <p class="text-blue-200 text-2xl">低分辨率光谱</p>
+                    </div>
+                  </div>
+                  <div
+                    class="flex flex-col items-center bg-blue-900 bg-opacity-40 p-4 rounded-lg w-5/12"
+                  >
+                    <i
+                      class="fas fa-drafting-compass text-2xl text-blue-300 mb-2"
+                    ></i>
+                    <div class="text-center">
+                      <p class="text-white font-bold">空间分辨率</p>
+                      <p class="text-yellow-300 text-2xl">&lt; 0.15角秒</p>
+                      <p class="text-blue-200 text-2xl">接近哈勃望远镜水平</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="item-card2 p-6">
+                <h3 class="text-xl font-semibold text-blue-400 mb-3">
+                  <i class="fas fa-flask mr-2 text-2xl"></i>科学价值
+                </h3>
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="bg-blue-900 bg-opacity-30 p-3 rounded-lg">
+                    <div class="flex items-center mb-2">
+                      <i class="fas fa-globe-americas text-yellow-300 mr-2"></i>
+                      <p class="text-white font-medium">宇宙学</p>
+                    </div>
+                  </div>
+                  <div class="bg-blue-900 bg-opacity-30 p-3 rounded-lg">
+                    <div class="flex items-center mb-2">
+                      <i class="fas fa-circle-notch text-yellow-300 mr-2"></i>
+                      <p class="text-white font-medium">星系演化</p>
+                    </div>
+                  </div>
+
+                  <div class="bg-blue-900 bg-opacity-30 p-3 rounded-lg">
+                    <div class="flex items-center mb-2">
+                      <i class="fas fa-moon text-yellow-300 mr-2"></i>
+                      <p class="text-white font-medium">暗物质</p>
+                    </div>
+                  </div>
+                  <div class="bg-blue-900 bg-opacity-30 p-3 rounded-lg">
+                    <div class="flex items-center mb-2">
+                      <i class="fas fa-star text-yellow-300 mr-2"></i>
+                      <p class="text-white font-medium">恒星物理</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="mb-8">
+            <h2>无缝光谱数据分析的挑战</h2>
+          </div>
+          <div class="text-blue-200 mb-6 text-2xl">
+            <p>
+              传统光谱数据处理方法在面对CSST这类大规模无缝光谱巡天时存在多重挑战，影响数据分析的效率和准确性。
+            </p>
+          </div>
+          <div class="flex-grow grid grid-cols-3 gap-6">
+            <div
+              class="item-card border-red-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div
+                class="icon-container bg-gradient-to-br from-red-500 to-red-700"
+              >
+                <i class="fas fa-layer-group text-2xl text-white"></i>
+              </div>
+              <p
+                class="text-5xl font-semibold text-red-400 mb-3 from-red-500 to-red-700"
+              >
+                光谱混叠
+              </p>
+              <p class="text-white text-2xl">
+                在拥挤天区，不同天体的光谱容易发生混叠，增加了目标识别和光谱提取的难度。
+              </p>
+            </div>
+            <div
+              class="item-card border-yellow-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div
+                class="icon-container bg-gradient-to-br from-yellow-500 to-yellow-700"
+              >
+                <i class="fas fa-question-circle text-2xl text-white"></i>
+              </div>
+              <p class="text-5xl font-semibold text-yellow-400 mt-4 mb-3">
+                空间不确定性
+              </p>
+              <p class="text-white text-2xl">
+                准确确定光谱信号对应的天体位置，尤其是对暗弱天体，是一个关键挑战。
+              </p>
+            </div>
+            <div
+              class="item-card border-purple-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div
+                class="icon-container bg-gradient-to-br from-purple-500 to-purple-700"
+              >
+                <i class="fas fa-database text-2xl text-white"></i>
+              </div>
+              <p class="text-5xl font-semibold text-purple-400 mt-4 mb-3">
+                海量数据处理
+              </p>
+              <p class="text-white text-2xl">
+                CSST将产生PB量级的数据，传统方法处理速度慢，难以满足大规模数据分析需求。
+              </p>
+            </div>
+            <div
+              class="item-card border-blue-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div
+                class="icon-container bg-gradient-to-br from-blue-500 to-blue-700"
+              >
+                <i class="fas fa-filter text-2xl text-white"></i>
+              </div>
+              <p class="text-5xl font-semibold text-blue-400 mt-4 mb-3">
+                背景扣除
+              </p>
+              <p class="text-white text-2xl">
+                复杂的空间背景，特别是弥散光和黄道光等，对暗弱天体光谱的精确测量构成挑战。背景准确估计和扣除的难度直接影响光谱测量的信噪比。
+              </p>
+            </div>
+            <div
+              class="item-card border-green-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div
+                class="icon-container bg-gradient-to-br from-green-500 to-green-700"
+              >
+                <i class="fas fa-chart-line text-2xl text-white"></i>
+              </div>
+              <p class="text-5xl font-semibold text-green-400 mt-4 mb-3">
+                误差累积
+              </p>
+              <p class="text-white text-2xl">
+                传统方法的多步骤流程（源检测、交叉匹配、谱线提取、背景扣除等）容易导致误差在各阶段累积和传播，尤其在处理暗弱目标时，影响最终分析结果的可靠性。
+              </p>
+            </div>
+            <div
+              class="item-card border-pink-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div
+                class="icon-container bg-gradient-to-br from-pink-500 to-pink-700"
+              >
+                <i class="fas fa-tags text-2xl text-white"></i>
+              </div>
+              <p class="text-5xl font-semibold text-pink-400 mt-4 mb-3">
+                快速分类与参数估计
+              </p>
+              <p class="text-white text-2xl">
+                面对海量光谱，需要高效的算法进行天体分类（如恒星、星系、类星体）和关键物理参数（如红移）的快速估计。传统方法在处理速度和自动化程度上存在不足。
+              </p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h2>动机</h2>
+          <div style="margin-top: 50px"></div>
+          <p>CSST并列式焦平面设计导致无缝光谱直接成像位置缺失 抽谱困难</p>
+        </section>
+
+        <section>
+          <h2>方案</h2>
+          <div style="margin-top: 50px"></div>
+          <p>机器学习方法 目标检测确定谱迹位置</p>
+        </section>
+
+        <section>
+          <div class="mb-8 text-center">
+            <h2>CSST无缝光谱跟常规目标检测任务的不同点</h2>
+          </div>
+          <div class="flex-grow grid grid-cols-2 gap-6">
+            <div
+              class="item-card border-red-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center">
+                  <div
+                    class="icon-container bg-gradient-to-br from-yellow-500 to-yellow-700"
+                  >
+                    <i class="fas fa-search-plus text-2xl text-white"></i>
+                  </div>
+                  <p class="text-4xl font-semibold text-yellow-300">
+                    小目标挑战
+                  </p>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="small-target"></div>
+                  <div class="text-lg text-gray-400">8×8像素</div>
+                </div>
+              </div>
+              <ul class="space-y-1 text-gray-300">
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    零阶光谱图像（Class
+                    B）只有~8×8像素大小，这些微小目标嵌入在9216×9232像素的超高分辨率图像中。
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    高分辨率数据导致内存和处理能力压力，而小目标易被噪声或背景变化掩盖。
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    简单的图像分割策略可能与大长宽比目标检测需求冲突。
+                  </p>
+                </li>
+              </ul>
+            </div>
+            <div
+              class="item-card border-red-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center">
+                  <div
+                    class="icon-container bg-gradient-to-br from-blue-500 to-blue-700"
+                  >
+                    <i class="fas fa-ruler-horizontal text-2xl text-white"></i>
+                  </div>
+                  <p class="text-4xl font-semibold text-blue-300">
+                    大长宽比挑战
+                  </p>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="large-aspect"></div>
+                  <div class="text-lg text-gray-400">1:30比例</div>
+                </div>
+              </div>
+              <ul class="space-y-1 text-gray-300">
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    非零阶光谱轨迹（Class
+                    A）呈细长形态，宽度为~300-400像素，高度仅~8像素，极端长宽比（>30:1）使常规目标检测方法难以适应。
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    将原始图像分割为小块会导致光谱轨迹在色散轴方向上被截断。
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    截断引入边缘伪影、错位等问题，破坏光谱连续性，影响参数提取。
+                  </p>
+                </li>
+              </ul>
+            </div>
+            <div
+              class="item-card border-red-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center">
+                  <div
+                    class="icon-container bg-gradient-to-br from-red-500 to-red-700"
+                  >
+                    <i class="fas fa-info text-2xl text-white"></i>
+                  </div>
+                  <p class="text-4xl font-semibold text-red-300">
+                    信息不对称挑战
+                  </p>
+                  <p></p>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                  <div class="info-asymmetry">
+                    <div class="wavelength"></div>
+                    <div class="spatial"></div>
+                  </div>
+                  <div class="text-lg text-gray-400">波长vs空间</div>
+                </div>
+              </div>
+              <ul class="space-y-1 text-gray-300">
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    无缝光谱图像中，波长和空间两个方向信息含量不均衡。
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    波长方向包含丰富信息：吸收/发射线谱、连续谱形状、温度、金属丰度等。
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    空间方向主要显示恒星位置和望远镜点扩散函数(PSF)效应。
+                  </p>
+                </li>
+              </ul>
+            </div>
+            <div
+              class="item-card border-red-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center">
+                  <div
+                    class="icon-container bg-gradient-to-br from-purple-500 to-purple-700"
+                  >
+                    <i class="fas fa-dot-circle text-2xl text-white"></i>
+                  </div>
+                  <p class="text-4xl font-semibold text-purple-300">
+                    背景复杂挑战
+                  </p>
+                </div>
+                <div
+                  class="w-24 h-16 bg-black rounded-md relative overflow-hidden"
+                  id="background-viz"
+                >
+                  <div
+                    class="absolute w-full h-full opacity-30"
+                    id="noise-pattern"
+                  ></div>
+                  <div
+                    class="absolute top-6 left-10 w-4 h-4 bg-yellow-300 rounded-full opacity-60"
+                  ></div>
+                </div>
+              </div>
+              <ul class="space-y-1 text-gray-300">
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    为了避免目标过密导致混叠太多，暗星（m&gt;22）的所有阶光谱轨迹均被指定为背景。
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    背景与目标信号共享形态和光谱特征，增加检测难度。
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    跟常见目标不同，光谱的边缘模糊不清稀。
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+        <!-- slide  YOLO模型选择 -->
+        <section>
+          <h2 class="text-4xl font-bold mb-0 text-white">模型选择</h2>
+          <div class="mb-8 text-center">
+            <!-- Main content -->
+            <div class="flex gap-4">
+              <!-- 左侧容器 -->
+              <div class="flex flex-col w-1/2 gap-4">
+                <div class="flex items-center mb-4">
+                  <i class="fas fa-code-branch text-3xl mr-3"></i>
+                  <p class="text-3xl font-semibold">目标检测模型演进</p>
+                </div>
+                <!-- Two Stage Detector -->
+                <div class="item-card p-4 mb-4 flex-1 text-left">
+                  <p class="text-3xl text-purple-300 mb-2 flex items-center">
+                    <i class="fas fa-project-diagram mr-2"></i>
+                    二阶段检测器 (R-CNN系列)
+                  </p>
+                  <div class="detector-diagram">
+                    <div
+                      class="detector-stage"
+                      style="
+                        left: 0;
+                        top: 0;
+                        width: 100px;
+                        background-color: rgba(17, 128, 193, 0.3);
+                      "
+                    >
+                      <p class="text-2xl font-semibold">输入图像</p>
+                    </div>
+                    <div
+                      class="arrow"
+                      style="left: 95px; top: 20px; width: 40px"
+                    ></div>
+                    <div
+                      class="detector-stage"
+                      style="
+                        left: 140px;
+                        top: 0;
+                        width: 100px;
+                        background-color: rgba(17, 128, 193, 0.3);
+                      "
+                    >
+                      <p class="text-2xl font-semibold">提议网络</p>
+                    </div>
+                    <div
+                      class="arrow"
+                      style="left: 245px; top: 20px; width: 40px"
+                    ></div>
+                    <div
+                      class="detector-stage"
+                      style="
+                        left: 290px;
+                        top: 0;
+                        width: 130px;
+                        background-color: rgba(17, 128, 193, 0.3);
+                      "
+                    >
+                      <p class="text-2xl font-semibold">分类与调整</p>
+                    </div>
+                  </div>
+                  <ul class="space-y2 text-gray-300 text-left text-xl">
+                    <li>
+                      <i class="fas fa-check-circle text-blue-400 mr-2"></i
+                      >R-CNN系列 (2014-2017) 采用层级处理
+                    </li>
+                    <li>
+                      <i class="fas fa-check-circle text-blue-400 mr-2"></i
+                      >先识别潜在区域，再精细分类与调整
+                    </li>
+                    <li>
+                      <i class="fas fa-plus-circle text-green-400 mr-2"></i
+                      >优点：高精度，特别适合复杂场景
+                    </li>
+                    <li>
+                      <i class="fas fa-minus-circle text-red-400 mr-2"></i
+                      >缺点：计算复杂度高，处理超高分辨率数据困难
+                    </li>
+                  </ul>
+                </div>
+                <div class="item-card2 p-4 mb-4 flex-1 text-left">
+                  <p class="text-3xl text-green-300 mb-2 flex items-center">
+                    <i class="fas fa-bolt mr-2"></i>
+                    一阶段检测器 (YOLO系列)
+                  </p>
+                  <div class="detector-diagram">
+                    <div
+                      class="detector-stage"
+                      style="
+                        left: 0;
+                        top: 0;
+                        width: 100px;
+                        background-color: rgba(228, 160, 160, 0.3);
+                      "
+                    >
+                      <p class="text-2xl font-semibold">输入图像</p>
+                    </div>
+                    <div
+                      class="arrow"
+                      style="left: 95px; top: 20px; width: 40px"
+                    ></div>
+                    <div
+                      class="detector-stage"
+                      style="
+                        left: 140px;
+                        top: 0;
+                        width: 250px;
+                        background-color: rgba(228, 160, 160, 0.3);
+                      "
+                    >
+                      <p class="text-2xl font-semibold">单次预测边界框与类别</p>
+                    </div>
+                  </div>
+                  <ul class="space-y2 text-gray-300 text-left text-xl">
+                    <li>
+                      <i class="fas fa-check-circle text-blue-400 mr-2"></i
+                      >YOLO、SSD等，直接从锚框网格预测
+                    </li>
+                    <li>
+                      <i class="fas fa-check-circle text-blue-400 mr-2"></i
+                      >简化检测流程，消除提议步骤
+                    </li>
+                    <li>
+                      <i class="fas fa-plus-circle text-green-400 mr-2"></i
+                      >优点：速度快，效率高，支持实时处理
+                    </li>
+                    <li>
+                      <i class="fas fa-minus-circle text-red-400 mr-2"></i
+                      >缺点：缺点：在拥挤场景精度可能略低
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- 右侧容器 -->
+              <div class="w-1/2 p-4 text-left">
+                <div class="flex items-center mb-4">
+                  <i class="fas fa-star text-green-300 text-2xl mr-3"></i>
+                  <p class="text-4xl flex items-center font-semibold">
+                    YOLO在天文数据处理中的独特优势
+                  </p>
+                </div>
+
+                <div
+                  class="grid grid-cols-2 gap-x-15 gap-y-10 items-center mr-0 ml-auto"
+                >
+                  <div class="advantage-item flex items-center">
+                    <div class="rounded-full p-2 mr-2">
+                      <i class="fas fa-expand-arrows-alt text-blue-300"></i>
+                    </div>
+                    <div>
+                      <p class="text-white text-2xl">完整处理高分辨率图像</p>
+                      <p class="text-gray-300 text-base">
+                        无需分割，保持光谱迹的完整性
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="advantage-item flex items-start">
+                    <div class="rounded-full p-2 mr-2">
+                      <i class="fas fa-search-minus text-blue-300"></i>
+                    </div>
+                    <div>
+                      <p class="text-white text-2xl">小目标检测能力</p>
+                      <p class="text-gray-300 text-base">
+                        优化的锚框架构适合检测零阶光谱
+                      </p>
+                    </div>
+                  </div>
+                  <div class="advantage-item flex items-start">
+                    <div class="rounded-full p-2 mr-2">
+                      <i class="fas fa-microchip text-blue-300"></i>
+                    </div>
+                    <div>
+                      <p class="text-white text-2xl">计算资源高效利用</p>
+                      <p class="text-gray-300 text-base">
+                        避免两阶段模型的内存瓶颈
+                      </p>
+                    </div>
+                  </div>
+                  <div class="advantage-item flex items-start">
+                    <div class="rounded-full p-2 mr-2">
+                      <i class="fas fa-puzzle-piece text-blue-300"></i>
+                    </div>
+                    <div>
+                      <p class="text-white text-2xl">模块化与可扩展性</p>
+                      <p class="text-gray-300 text-base">
+                        支持未来直接提取天体物理参数
+                      </p>
+                    </div>
+                  </div>
+                  <div class="advantage-item flex items-start">
+                    <div class="rounded-full p-2 mr-2">
+                      <i class="fas fa-tachometer-alt text-blue-300"></i>
+                    </div>
+                    <div>
+                      <p class="text-white text-2xl">模型选择灵活性</p>
+                      <p class="text-gray-300 text-base">
+                        YOLOv5速度快，YOLO11精度高
+                      </p>
+                    </div>
+                  </div>
+                  <div class="advantage-item flex items-start">
+                    <div class="rounded-full p-2 mr-2">
+                      <i class="fas fa-users text-blue-300"></i>
+                    </div>
+                    <div>
+                      <p class="text-white text-2xl">社区支持与优化</p>
+                      <p class="text-gray-300 text-sm">
+                        活跃的开发社区确保模型持续改进
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <br />
+                <div class="mt-auto pt-4 border-t border-gray-600">
+                  <div class="flex items-center">
+                    <i
+                      class="fas fa-lightbulb text-yellow-300 text-2xl mr-3"
+                    ></i>
+                    <p class="text-xl text-gray-200">
+                      尽管二阶段模型的精度较高，但YOLO的高效处理完整光谱与硬件兼容性使其成为CSST无缝光谱分析的理想选择。
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section>
+          <div class="w-full text-center mb-6">
+            <h2 class="text-4xl font-bold mb-2 text-white">
+              数据集设计与预处理
+            </h2>
+          </div>
+          <!-- Main content -->
+          <div class="flex flex-col space-y-6">
+            <!-- Datasets Section -->
+            <div class="flex space-x-6">
+              <!-- Simulation A -->
+              <div class="w-1/2 item-card p-4">
+                <div class="flex items-center mb-3">
+                  <i class="fas fa-database text-blue-300 text-2xl mr-3"></i>
+                  <p class="text-2xl font-semibold">模拟A：不同密度恒星场</p>
+                </div>
+                <ul class="space-y-2">
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl">专注于银河系不同区域的恒星样本</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl"
+                      >代表性区域：银经l=90°，银纬b=10°和b=20°</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl">使用Galaxia模型生成恒星分布</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl"
+                      >使用CSST早期仪器模型，未包含本底和天光背景</span
+                    >
+                  </li>
+                </ul>
+              </div>
+              <!-- Simulation B -->
+              <div class="w-1/2 item-card2 p-4">
+                <div class="flex items-center mb-3">
+                  <i class="fas fa-database text-blue-300 text-2xl mr-3"></i>
+                  <p class="text-2xl font-semibold">模拟B：三类天体混合</p>
+                </div>
+                <ul class="space-y-2">
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl">包含恒星、星系和类星体三种天体</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl"
+                      >观测区域：赤经约170°，赤纬约-23.5°</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl"
+                      >包含完整仪器效应，部分已通过CSST数据处理管道校正</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl"
+                      >更新的PSF模型，空间轮廓更窄（FWHM约2-4像素）</span
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <!-- Preprocessing Section -->
+            <div class="flex gap-4">
+              <div class="item-card w-1/2">
+                <div class="flex items-center mb-3">
+                  <i class="fas fa-cogs text-blue-300 text-2xl mr-3"></i>
+                  <p class="text-2xl font-semibold">数据预处理流程</p>
+                </div>
+                <div class="flex">
+                  <!-- Steps Description -->
+                  <div class="pr-4">
+                    <div class="space-y-6">
+                      <!-- Step 1: Image Enhancement -->
+                      <div class="process-step pb-4">
+                        <p class="text-2xl text-yellow-300 mb-2">
+                          图像对比度增强
+                        </p>
+                        <p class="text-xl">
+                          使用ZScale算法重新调整像素值分布。
+                        </p>
+                      </div>
+                      <!-- Step 2: Image Resizing -->
+                      <div class="process-step pb-4">
+                        <p class="text-2xl text-yellow-300 mb-2">
+                          图像尺寸调整
+                        </p>
+                        <p class="text-xl">
+                          为了避免光谱图像被切断，只水平分割，然后重新拉伸为正方形。
+                        </p>
+                      </div>
+                      <!-- Step 3: Brightness Thresholding -->
+                      <div class="process-step pb-4">
+                        <p class="text-2xl text-yellow-300 mb-2">标记边界框</p>
+                        <p class="text-xl">
+                          考虑到源密度和信噪比，只标记比较亮的源。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex-grow w-2/3 h-full">
+                <div class="container" style="height: 60vh; margin-left: 40px">
+                  <div style="align-items: center">
+                    <div class="w-full">
+                      <i
+                        class="fas fa-crop-alt text-blue-300 text-5xl mb-1"
+                      ></i>
+                      <p class="text-2xl">每张原始图像<br />分割为10个子图</p>
+                    </div>
+                  </div>
+                  <div class="item">
+                    <div class="w-full">
+                      <i
+                        class="fas fa-object-group text-blue-300 text-5xl mb-1"
+                      ></i>
+                      <p class="text-2xl">每个子图包含<br />约220个目标对象</p>
+                    </div>
+                  </div>
+                  <div class="item">
+                    <div class="w-full">
+                      <i class="fas fa-server text-blue-300 text-5xl mb-1"></i>
+                      <p class="text-2xl">
+                        训练硬件：8×NVIDIA<br />A100-PCIE-40GB GPU
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- 展示zscale效果 -->
+        <!-- New Fade Animation Slide - Step 1 -->
+        <section>
+          <section data-auto-animate>
+            <h3>图像对比度增强</h3>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="img_nolim.png"
+                  alt="Image 1"
+                  style="opacity: 1"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="img_vmax1000.png"
+                  alt="Image 2"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image3"
+                  data-fig-name="img_vmax100.png"
+                  alt="Image 3"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image4"
+                  data-fig-name="img_zscale.png"
+                  alt="Image 4"
+                  style="opacity: 0"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-1" style="opacity: 1">
+                原始图像直接显示
+              </p>
+            </div>
+          </section>
+          <section data-auto-animate>
+            <h3>图像对比度增强</h3>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="img_nolim.png"
+                  alt="Image 1"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="img_vmax1000.png"
+                  alt="Image 2"
+                  style="opacity: 1"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image3"
+                  data-fig-name="img_vmax100.png"
+                  alt="Image 3"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image4"
+                  data-fig-name="img_zscale.png"
+                  alt="Image 4"
+                  style="opacity: 0"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-2" style="opacity: 1">
+                原始图像 vmax=1000
+              </p>
+            </div>
+          </section>
+
+          <!-- New Fade Animation Slide - Step 2 -->
+          <section data-auto-animate>
+            <h3>图像对比度增强</h3>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="img_nolim.png"
+                  alt="Image 1"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="img_vmax1000.png"
+                  alt="Image 2"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image3"
+                  data-fig-name="img_vmax100.png"
+                  alt="Image 3"
+                  style="opacity: 1"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image4"
+                  data-fig-name="img_zscale.png"
+                  alt="Image 4"
+                  style="opacity: 0"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-3" style="opacity: 1">
+                原始图像 vmax=100
+              </p>
+            </div>
+          </section>
+
+          <!-- New Fade Animation Slide - Step 3 -->
+          <section data-auto-animate>
+            <h3>图像对比度增强</h3>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="img_nolim.png"
+                  alt="Image 1"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="img_vmax1000.png"
+                  alt="Image 2"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image3"
+                  data-fig-name="img_vmax100.png"
+                  alt="Image 3"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image4"
+                  data-fig-name="img_zscale.png"
+                  alt="Image 4"
+                  style="opacity: 1"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-4" style="opacity: 1">
+                zscale 动态范围压缩, 能间接提高图像对比度
+              </p>
+            </div>
+          </section>
+        </section>
+        <section>
+          <!-- Step 1: Initial 400x400 figure -->
+          <section data-auto-animate>
+            <h3>图像切割和拉伸</h3>
+            <div
+              class="stripe-figure-stage"
+              data-id="horizontal-stripe-wrapper"
+              style="
+                width: 600px;
+                height: 600px;
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(10, 1fr);
+                gap: 0px;
+                border-radius: 0px;
+                overflow: hidden;
+                /* background-image is set by JS */
+                background-size: cover;
+                background-position: center;
+                position: relative;
+              "
+              data-fig-name="MSC_0000031.jpg"
+            >
+              <div data-id="h_s1" style="background-color: transparent"></div>
+              <div data-id="h_s2" style="background-color: transparent"></div>
+              <div data-id="h_s3" style="background-color: transparent"></div>
+              <div data-id="h_s4" style="background-color: transparent"></div>
+              <div data-id="h_s5" style="background-color: transparent"></div>
+              <div data-id="h_s6" style="background-color: transparent"></div>
+              <div data-id="h_s7" style="background-color: transparent"></div>
+              <div data-id="h_s8" style="background-color: transparent"></div>
+              <div data-id="h_s9" style="background-color: transparent"></div>
+              <div data-id="h_s10" style="background-color: transparent"></div>
+            </div>
+            <p class="slide-caption">原始无缝光谱图像 9216x9232像素。</p>
+          </section>
+
+          <!-- Step 2: Split into 10 distinct horizontal 400x40px stripes -->
+          <section data-auto-animate>
+            <h3>水平分割</h3>
+            <div
+              class="stripe-figure-stage"
+              data-id="horizontal-stripe-wrapper"
+              style="
+                width: 600px;
+                height: 654px;
+                display: grid;
+                position: relative;
+                grid-template-columns: 600px;
+                grid-template-rows: repeat(10, 60px);
+                gap: 6px;
+                border-radius: 0px;
+                overflow: visible;
+                background-image: none;
+                box-shadow: none;
+              "
+            >
+              <div
+                data-id="h_s1"
+                data-fig-name="MSC_0000031_0.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s2"
+                data-fig-name="MSC_0000031_1.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s3"
+                data-fig-name="MSC_0000031_2.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s4"
+                data-fig-name="MSC_0000031_3.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s5"
+                data-fig-name="MSC_0000031_4.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s6"
+                data-fig-name="MSC_0000031_5.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s7"
+                data-fig-name="MSC_0000031_6.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s8"
+                data-fig-name="MSC_0000031_7.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s9"
+                data-fig-name="MSC_0000031_8.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s10"
+                data-fig-name="MSC_0000031_9.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+            </div>
+            <p class="slide-caption">
+              原始图像分割为10条独立的水平条纹 (每条9216x979，重合62像素)
+            </p>
+          </section>
+
+          <!-- Step 3: Horizontal Stripes become 200x200 squares and form a 5x2 grid -->
+          <section data-auto-animate>
+            <h3>拉伸和缩放</h3>
+            <div
+              class="stripe-figure-stage"
+              data-id="horizontal-stripe-wrapper"
+              style="
+                width: 1036px;
+                height: 409px;
+                display: grid;
+                position: relative;
+                grid-template-columns: repeat(5, 200px);
+                grid-template-rows: repeat(2, 200px);
+                gap: 9px;
+                border-radius: 0px;
+                overflow: visible;
+                background-image: none;
+                box-shadow: none;
+              "
+            >
+              <div
+                data-id="h_s1"
+                data-fig-name="MSC_0000031_0.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s2"
+                data-fig-name="MSC_0000031_1.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s3"
+                data-fig-name="MSC_0000031_2.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s4"
+                data-fig-name="MSC_0000031_3.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s5"
+                data-fig-name="MSC_0000031_4.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s6"
+                data-fig-name="MSC_0000031_5.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s7"
+                data-fig-name="MSC_0000031_6.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s8"
+                data-fig-name="MSC_0000031_7.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s9"
+                data-fig-name="MSC_0000031_8.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s10"
+                data-fig-name="MSC_0000031_9.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+            </div>
+            <p class="slide-caption">
+              拉伸为正方形，约4500x4500像素（内存限制）
+            </p>
+          </section>
+        </section>
+        <section>
+          <section data-auto-animate>
+            <div><h3>标记边界框</h3></div>
+
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="MSC_0000031_0.jpg"
+                  alt="Image 1"
+                  style="opacity: 1"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="MSC_0000031_0_box.jpg"
+                  alt="Image 2"
+                  style="opacity: 0"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-1" style="opacity: 1">
+                单幅图示例 (SimA,只有恒星)
+              </p>
+            </div>
+          </section>
+          <section data-auto-animate>
+            <div><h3>标记边界框</h3></div>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="MSC_0000031_0.jpg"
+                  alt="Image 1"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="MSC_0000031_0_box.jpg"
+                  alt="Image 2"
+                  style="opacity: 1"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-2" style="opacity: 1">
+                标记<span class="text-yellow-300">零级谱迹</span>和<span
+                  class="text-blue-300"
+                  >一级谱迹</span
+                >边界框，只考虑亮星, \( m \le 22\)
+              </p>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h2>训练</h2>
+          <div style="margin-top: 50px"></div>
+          <p>保留模型默认的图像增强技术</p>
+          <p>考虑到源密度，避免边界框重叠太多，选择在SimA mwl90b20上训练</p>
+        </section>
+
+        <!-- New Slide explaining IoU, Precision, Recall, mAP -->
+
+        <section>
+          <section data-auto-animate>
+            <p class="text-red-300">谱迹检测结果（GI01,mwl90b20,YOLOv5s）</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_01_fn_batch2.jpg"
+                    alt="Figure 1"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_02_fn_batch2.jpg"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_03_fn_batch0.jpg"
+                    alt="Figure 5"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  真实值
+                  <span style="color: rgba(237, 39, 230, 0.798)">
+                    FN 假负例(漏检)</span
+                  >
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_01_fp_batch2.jpg"
+                    alt="Figure 2"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_02_fp_batch2.jpg"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_03_fp_batch0.jpg"
+                    alt="Figure 6"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1; margin-bottom: -30px"
+                >
+                  预测值
+                  <span style="color: rgba(39, 237, 230, 0.798)">
+                    “FP 假正例(误检)”</span
+                  >
+                </p>
+              </div>
+            </div>
+          </section>
+          <section data-auto-animate>
+            <p class="text-green-300">谱迹检测结果（GV02,mwl90b20,YOLOv5s）</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_01_fn_batch2.jpg"
+                    alt="Figure 1"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_02_fn_batch2.jpg"
+                    alt="Figure 3"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_03_fn_batch0.jpg"
+                    alt="Figure 5"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  真实值
+                  <span style="color: rgba(237, 39, 230, 0.798)">
+                    FN 假负例(漏检)</span
+                  >
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_01_fp_batch2.jpg"
+                    alt="Figure 2"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_02_fp_batch2.jpg"
+                    alt="Figure 4"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_03_fp_batch0.jpg"
+                    alt="Figure 6"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  预测值
+                  <span style="color: rgba(39, 237, 230, 0.798)">
+                    “FP 假正例(误检)”</span
+                  >
+                </p>
+              </div>
+            </div>
+          </section>
+          <section data-auto-animate>
+            <p class="text-purple-300">谱迹检测结果（GU03,mwl90b20,YOLOv5s）</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_01_fn_batch2.jpg"
+                    alt="Figure 1"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_02_fn_batch2.jpg"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_03_fn_batch0.jpg"
+                    alt="Figure 5"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  真实值
+                  <span style="color: rgba(237, 39, 230, 0.798)">
+                    FN 假负例(漏检)</span
+                  >
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_01_fp_batch2.jpg"
+                    alt="Figure 2"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_02_fp_batch2.jpg"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_03_fp_batch0.jpg"
+                    alt="Figure 6"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  预测值
+                  <span style="color: rgba(39, 237, 230, 0.798)">
+                    “FP 假正例(误检)”</span
+                  >
+                </p>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h2>模型性能评估指标</h2>
+          <div class="iou-container">
+            <div class="iou-explanation">
+              <p class="text-5xl">IoU (交并比)</p>
+              <pre><code class="text-blue-300" style="font-size: 0.8em; padding: 10px; border-radius: 5px;">IoU = Area of Overlap / Area of Union</code></pre>
+              <p class="text-2xl">
+                交并比（Intersection over
+                Union）是衡量模型预测的边界框（Prediction）与真实物体的边界框（Ground
+                Truth）重叠程度的指标。
+              </p>
+              <p class="text-2xl">
+                它是这两个区域的“交集”面积除以“并集”面积的结果。IoU值越高，表示模型定位越准确。
+                <span class="text-red-300 text-2xl"
+                  >当IoU大于0.7时，我们认为模型成功预测目标。</span
+                >
+              </p>
+            </div>
+            <div class="flex-1" style="margin-left: 200px">
+              <div class="flex items-center">
+                IoU=
+                <div
+                  class="iou-visualization"
+                  style="width: 120px background-color: rgba(0, 255, 0, 0.131))"
+                >
+                  <div class="iou-box ground-truth-box"></div>
+                  <div class="iou-box prediction-box"></div>
+                  <div class="iou-box intersection-area"></div>
+
+                  <div class="iou-box ground-truth-box2"></div>
+                  <svg width="200" height="200">
+                    <line
+                      x1="0"
+                      y1="150"
+                      x2="200"
+                      y2="150"
+                      stroke="#64ffda"
+                      stroke-width="2"
+                    />
+                  </svg>
+                  <div class="iou-box prediction-box2"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="metric-grid">
+            <div class="item-card">
+              <p class="text-blue-300 text-4xl">
+                <i class="fas fa-bullseye mr-2 text-blue-300"></i>精确率/查准率
+                (Precision)
+              </p>
+              <p class="text-2xl">
+                在所有被模型预测为“正例”的结果中，真正是“正例”的比例。衡量模型预测的准确性。
+              </p>
+            </div>
+            <div class="item-card">
+              <p class="text-blue-300 text-4xl">
+                <i class="fas fa-search mr-2 text-blue-300"></i>召回率/查全率
+                (Recall)
+              </p>
+              <p class="text-2xl">
+                在所有真实的“正例”中，被模型成功预测出来的比例。衡量模型是否“找得全”。
+              </p>
+            </div>
+          </div>
+          <div class="item-card" style="margin-top: 20px">
+            <p class="text-blue-300 text-4xl">
+              <i class="fas fa-chart-line mr-2 text-blue-300"></i>mAP
+              (平均精度均值)
+            </p>
+            <p class="text-2xl">
+              mAP（mean Average
+              Precision）是衡量目标检测模型综合性能的核心指标。它通过计算每个类别下的平均精度（AP），然后对所有类别的AP值求平均得到。一个高mAP值意味着模型在所有类别上都具有高精确率和高召回率。AP为Precision-Recall曲线面积。
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <section>
+            <h2>YOLOv5子模型对比</h2>
+            <p>
+              <span class="text-blue-300">P5</span> vs
+              <span class="text-red-300">P6</span>
+            </p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                  style="width: 400px; height: 300px"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="model_layers.png"
+                    alt="Figure 1"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  层数
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                  style="width: 400px; height: 300px"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="model_parameters.png"
+                    alt="Figure 2"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  参数量
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section data-auto-animate>
+            <h3>YOLOv5模型性能评估</h3>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                style="width: 800px; height: 600px"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="yolov5_matrix_A.jpg"
+                  alt="Image 1"
+                  style="
+                    opacity: 1;
+                    border: 2px solid rgba(100, 255, 218, 0.5);
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 5px;
+                  "
+                />
+              </div>
+              <div>
+                <p class="slide-caption" data-id="caption-1" style="opacity: 1">
+                  一级谱迹
+                </p>
+                <span class="text-blue-300">\( F_{1 max} \)</span>
+                <span class="text-orange-400">Recall</span>
+                <span class="text-green-300">Precision</span>
+                <span class="text-red-400">AP</span>
+              </div>
+            </div>
+          </section>
+          <section data-auto-animate>
+            <h3>YOLOv5模型性能评估</h3>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                style="width: 800px; height: 600px"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="yolov5_matrix_B.jpg"
+                  alt="Image 1"
+                  style="
+                    opacity: 1;
+                    border: 2px solid rgba(100, 255, 218, 0.5);
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 5px;
+                  "
+                />
+              </div>
+              <div>
+                <p class="slide-caption" data-id="caption-2" style="opacity: 1">
+                  零级谱迹
+                </p>
+                <span class="text-blue-300">F1 max</span>
+                <span class="text-orange-400">Recall</span>
+                <span class="text-green-300">Precision</span>
+                <span class="text-red-400">AP</span>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h2>不同波段召回率对比</h2>
+          <div class="static-figure-container">
+            <img
+              class="magnifiable"
+              data-fig-name="model_recall_with_values.png"
+              alt="Static figure example"
+            />
+          </div>
+          <p class="slide-caption">
+            <span class="text-blue-300">一级谱迹</span>和<span
+              class="text-red-300"
+              >零级谱迹</span
+            >, @confidence \( \ge 0.25 \)。
+          </p>
+        </section>
+        <section>
+          <section>
+            <h2>密集星场</h2>
+            <div style="margin-top: 50px"></div>
+            <p>密集星场源混叠严重，数据不能用作训练</p>
+            <p>但能应用mwl90b20数据训练的模型</p>
+          </section>
+          <section data-auto-animate>
+            <p class="text-red-300">密集星场谱迹检测结果（GI01,mwl90b10）</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolov5s_gi_b10_gt.jpg"
+                    alt="Figure 5"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  真实值
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolov5s_gi_b10_pred.jpg"
+                    alt="Figure 6"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  预测值
+                </p>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2>结论</h2>
+            <p>在密集星场，YOLO模型能识别混叠的谱迹</p>
+            <p>边界框重叠严重，无法准确评估精确率、召回率等数值</p>
+            <p>目测检测位置效果很好</p>
+          </section>
+        </section>
+
+        <section>
+          <h2>还能做更多</h2>
+          <div style="margin-top: 50px"></div>
+          <p>例如天体源细分类</p>
+          <p>利用Simulation B，最新的5平方度仿真数据，包含恒星、星系和类星体</p>
+        </section>
+        <section>
+          <h2>YOLO11</h2>
+          <div class="static-figure-container">
+            <img
+              class="magnifiable"
+              data-fig-name="yolo11vs.png"
+              alt="Static figure example"
+              style="border-radius: 50px"
+            />
+          </div>
+          <p class="slide-caption">
+            分类精度更高的YOLO11能处理更细的分类，例如区分恒星和星系
+          </p>
+          <p class="slide-caption">
+            但受服务器性能限制，针对中等密度的模拟数据(SimB)，目前Geranium上只能运行n和s两个模型，我们选择YOLO11s.
+          </p>
+        </section>
+
+        <!-- SLIDE 1: GI Band Results -->
+        <section>
+          <section><h2>实例一： 检测恒星和星系</h2></section>
+          <section data-auto-animate>
+            <p data-id="results-title" class="text-red-300">
+              谱迹检测结果 (GI01, mwl90b20, YOLO11s)
+            </p>
+            <div class="three-column-layout-fade">
+              <!-- Column 1: Ground Truth -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-gt"
+              >
+                <div class="image-placeholder-3" data-id="img-gt-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gi_gt.jpg"
+                    alt="GI GT"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gv_gt.jpg"
+                    alt="GV GT"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gu_gt.jpg"
+                    alt="GU GT"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p class="slide-caption">真实值</p>
+              </div>
+              <!-- Column 2: Prediction -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-pred"
+              >
+                <div class="image-placeholder-3" data-id="img-pred-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gi_pred.jpg"
+                    alt="GI Pred"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gv_pred.jpg"
+                    alt="GV Pred"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gu_pred.jpg"
+                    alt="GU Pred"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p class="slide-caption">预测值</p>
+              </div>
+              <!-- Column 3: Confusion Matrix -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-cm"
+              >
+                <div class="image-placeholder-3" data-id="img-cm-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gi.png"
+                    alt="GI CM"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gv.png"
+                    alt="GV CM"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gu.png"
+                    alt="GU CM"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p class="slide-caption">混淆矩阵</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- SLIDE 2: GV Band Results -->
+          <section data-auto-animate>
+            <p data-id="results-title" class="text-green-300">
+              谱迹检测结果 (GV02, mwl90b20, YOLO11)
+            </p>
+            <div class="three-column-layout-fade">
+              <!-- Column 1: Ground Truth -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-gt"
+              >
+                <div class="image-placeholder-3" data-id="img-gt-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gi_gt.jpg"
+                    alt="GI GT"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gv_gt.jpg"
+                    alt="GV GT"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gu_gt.jpg"
+                    alt="GU GT"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p class="slide-caption">真实值</p>
+              </div>
+              <!-- Column 2: Prediction -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-pred"
+              >
+                <div class="image-placeholder-3" data-id="img-pred-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gi_pred.jpg"
+                    alt="GI Pred"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gv_pred.jpg"
+                    alt="GV Pred"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gu_pred.jpg"
+                    alt="GU Pred"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p class="slide-caption">预测值</p>
+              </div>
+              <!-- Column 3: Confusion Matrix -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-cm"
+              >
+                <div class="image-placeholder-3" data-id="img-cm-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gi.png"
+                    alt="GI CM"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gv.png"
+                    alt="GV CM"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gu.png"
+                    alt="GU CM"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p class="slide-caption">混淆矩阵</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- SLIDE 3: GU Band Results -->
+          <section data-auto-animate>
+            <p data-id="results-title" class="text-purple-300">
+              谱迹检测结果 (GU03, mwl90b20, YOLO11)
+            </p>
+            <div class="three-column-layout-fade">
+              <!-- Column 1: Ground Truth -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-gt"
+              >
+                <div class="image-placeholder-3" data-id="img-gt-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gi_gt.jpg"
+                    alt="GI GT"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gv_gt.jpg"
+                    alt="GV GT"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gu_gt.jpg"
+                    alt="GU GT"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p class="slide-caption">真实值</p>
+              </div>
+              <!-- Column 2: Prediction -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-pred"
+              >
+                <div class="image-placeholder-3" data-id="img-pred-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gi_pred.jpg"
+                    alt="GI Pred"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gv_pred.jpg"
+                    alt="GV Pred"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gu_pred.jpg"
+                    alt="GU Pred"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p class="slide-caption">预测值</p>
+              </div>
+              <!-- Column 3: Confusion Matrix -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-cm"
+              >
+                <div class="image-placeholder-3" data-id="img-cm-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gi.png"
+                    alt="GI CM"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gv.png"
+                    alt="GV CM"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gu.png"
+                    alt="GU CM"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p class="slide-caption">混淆矩阵</p>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h2>还可以做什么？</h2>
+          <div style="margin-top: 50px"></div>
+          <p>更细的分类</p>
+        </section>
+
+        <section>
+          <section>
+            <h2>实例二： 恒星检测和光谱型分类</h2>
+            <div style="margin-top: 50px"></div>
+            <p>只有恒星 随机星表 \( g \;{\rm mag} \sim N(20,2)\)</p>
+          </section>
+
+          <section data-auto-animate>
+            <p data-id="results-title" class="text-red-300">
+              谱迹检测结果 (GI01,随机星表, YOLO11s)
+            </p>
+            <div class="two-column-layout-fade">
+              <!-- Column 1: Ground Truth -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-gt"
+              >
+                <div class="image-placeholder-2" data-id="img-gt-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11_spec_class_val_batch1_labels.jpg"
+                    alt="GI GT"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p class="slide-caption">恒星光谱型真实值</p>
+              </div>
+
+              <!-- Column 2: Prediction -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-pred"
+              >
+                <div class="image-placeholder-2" data-id="img-pred-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11_spec_class_val_batch1_pred.jpg"
+                    alt="GI Pred"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p class="slide-caption">恒星光谱型预测值</p>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <div class="static-figure-container">
+              <img
+                class="magnifiable"
+                data-fig-name="yolo11_cm_spec_class.png"
+                alt="Static figure example"
+                style="border-radius: 10px"
+              />
+            </div>
+            <h3>恒星光型分类混淆矩阵</h3>
+            <p>准对角线分布说明模型能从中提取到不同光谱型光谱的特征。</p>
+          </section>
+          <section>
+            <h2>结论</h2>
+            <div style="margin-top: 50px"></div>
+            <p>YOLO模型对恒星光谱型分类效果不错</p>
+            <p>
+              有望从中提取出连续型参数，例如\({\rm T_{eff}}\), \({{\rm
+              log}\;g}\)和\({\rm [Fe/H]}\)
+            </p>
+            <p>实现方式：可以改造YOLO网络头部，使其能用于回归型任务</p>
+          </section>
+        </section>
+
+        <section>
+          <h2>还可以做什么？</h2>
+          <div style="margin-top: 50px"></div>
+          <p>星系红移</p>
+        </section>
+
+        <section>
+          <section>
+            <h2>实例三：星系检测和红移分类</h2>
+            <div style="margin-top: 50px"></div>
+            <p>通过简单分bin把回归问题转化为分类问题</p>
+          </section>
+          <section data-auto-animate>
+            <p data-id="results-title" class="text-red-300">
+              星系红移分类 (SimB, YOLO11s)
+            </p>
+            <div class="two-column-layout-fade">
+              <!-- Column 1: Ground Truth -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-gt"
+              >
+                <div class="image-placeholder-2" data-id="img-gt-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="galaxyz_11s_gi_gt.jpg"
+                    alt="GI GT"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p class="slide-caption">星系红移真实值（离散型）</p>
+              </div>
+
+              <!-- Column 2: Prediction -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-pred"
+              >
+                <div class="image-placeholder-2" data-id="img-pred-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="galaxyz_11s_gi_pred.jpg"
+                    alt="GI Pred"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p class="slide-caption">星系红移预测值（离散型）</p>
+              </div>
+            </div>
+          </section>
+          <section>
+            <div class="static-figure-container">
+              <img
+                class="magnifiable"
+                data-fig-name="confusion_matrix_normalized_gi_galaxyz.png"
+                alt="Static figure example"
+                style="border-radius: 10px"
+              />
+            </div>
+            <h4>离散型星系红移混淆矩阵, \(z \in [0,1.2+]\), 13 bins</h4>
+            <p>准对角线分布说明模型能从中提取到星系红移相关特征。</p>
+          </section>
+          <section>
+            <div class="static-figure-container">
+              <img
+                class="magnifiable"
+                data-fig-name="confusion_matrix_normalized_24bins.png"
+                alt="Static figure example"
+                style="border-radius: 10px"
+              />
+            </div>
+            <h4>离散型星系红移混淆矩阵, \(z \in [0,1.2+]\), 25bins</h4>
+            <p>当把bin分得更细，对角分布更明显</p>
+          </section>
+
+          <section>
+            <h2>结论</h2>
+            <div style="margin-top: 50px"></div>
+            <p>从无缝光谱图像中直接检测出星系并给出红移值是可能的</p>
+            <p>实现方式：可以改造YOLO网络头部，使其能用于回归型任务</p>
+          </section>
+        </section>
+
+        <section>
+          <h2>还可以做什么？</h2>
+          <div style="margin-top: 50px"></div>
+          <p>星表中还有类星体</p>
+        </section>
+
+        <section>
+          <section>
+            <h2>实例四： 特殊源检测--类星体</h2>
+            <div style="margin-top: 50px"></div>
+            <p>类星体稀有，且暗</p>
+          </section>
+
+          <section data-auto-animate>
+            <p class="text-red-300">类星体检测 (GI01, YOLO11s)</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="qusar_img_gt_batch2.png"
+                    alt="Figure 1"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="qusar_img_gt_batch3.png"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="qusar_img_gt_batch4.png"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="qusar_img_gt_batch6.png"
+                    alt="Figure 5"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  真实值
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch2.png"
+                    alt="Figure 2"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch3.png"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch4.png"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch6.png"
+                    alt="Figure 6"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  预测值
+                </p>
+              </div>
+              <p>例1: 两个明亮的类星体，均被检出。同时假正例比较多。</p>
+            </div>
+          </section>
+
+          <section data-auto-animate>
+            <p class="text-red-300">类星体检测 (GI01, YOLO11s)</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch2.png"
+                    alt="Figure 1"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch3.png"
+                    alt="Figure 3"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch4.png"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch6.png"
+                    alt="Figure 5"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  真实值
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch2.png"
+                    alt="Figure 2"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch3.png"
+                    alt="Figure 4"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch4.png"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch6.png"
+                    alt="Figure 6"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  预测值
+                </p>
+              </div>
+              <p>例2: 不太亮的类星体，被检出。</p>
+            </div>
+          </section>
+
+          <section data-auto-animate>
+            <p class="text-red-300">类星体检测 (GI01, YOLO11s)</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch2.png"
+                    alt="Figure 1"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch3.png"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch4.png"
+                    alt="Figure 3"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch6.png"
+                    alt="Figure 5"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  真实值
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch2.png"
+                    alt="Figure 2"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch3.png"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch4.png"
+                    alt="Figure 4"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch6.png"
+                    alt="Figure 6"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  预测值
+                </p>
+              </div>
+              <p>例3: 较暗的类星体，没有被检出</p>
+            </div>
+          </section>
+
+          <section data-auto-animate>
+            <p class="text-red-300">类星体检测 (GI01, YOLO11s)</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch2.png"
+                    alt="Figure 1"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch3.png"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch4.png"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch6.png"
+                    alt="Figure 5"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  真实值
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch2.png"
+                    alt="Figure 2"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch3.png"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch4.png"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch6.png"
+                    alt="Figure 6"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  预测值
+                </p>
+              </div>
+              <p>例4: 较暗的类星体，被成功检出。</p>
+            </div>
+          </section>
+          <section>
+            <div class="static-figure-container">
+              <img
+                class="magnifiable"
+                data-fig-name="quasar_recall_precision.png"
+                alt="Static figure example"
+                style="border-radius: 10px"
+              />
+            </div>
+            <h4>Precision-Recall曲线</h4>
+            <p class="slide-caption">
+              PR越靠近右上角表明模型效果越好。但考虑到类星体是稀有源，我们可以接受较低的精确率。
+            </p>
+          </section>
+          <section>
+            <h2>结论</h2>
+            <div style="margin-top: 50px"></div>
+            <p>YOLO模型能检测出稀有且暗的类星体</p>
+            <p>YOLO可用于快速检测特殊源</p>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>讨论</h2>
+            <div style="margin-top: 50px"></div>
+            <p>检测极限星等 不同波段对比 边界框定位准确度</p>
+          </section>
+          <section>
+            <h3>极限星等</h3>
+          </section>
+          <section data-auto-animate>
+            <div><h3>暗源真值</h3></div>
+
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+                style="width: 600px; height: 600px"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="maglim_analyse.png"
+                  alt="Image 1"
+                  style="opacity: 1"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="magl_lim_fnfp.jpg"
+                  alt="Image 2"
+                  style="opacity: 0"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-1" style="opacity: 1">
+                恒星星等 \( \in (23,25]\), 星系星等 \( \in (21,22.5]\)
+              </p>
+            </div>
+          </section>
+
+          <section data-auto-animate>
+            <div><h3>暗源检测结果</h3></div>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+                style="width: 600px; height: 600px"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="maglim_analyse.jpg"
+                  alt="Image 1"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="mag_lim_fnfp.jpg"
+                  alt="Image 2"
+                  style="opacity: 1"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-2" style="opacity: 1">
+                <span style="color: #64ffda">伪FP</span
+                >（一般为星等在阈值范围外的真值）和<span style="color: #f764ff"
+                  >FN</span
+                >（星等在阈值范围内的漏检）
+              </p>
+            </div>
+          </section>
+          <section>
+            <h2>不同波段召回率对比</h2>
+          </section>
+
+          <section>
+            <h2>不同波段召回率对比</h2>
+            <div class="static-figure-container">
+              <img
+                class="magnifiable"
+                data-fig-name="model_recall_with_values_sg.png"
+                alt="Static figure example"
+              />
+            </div>
+            <p class="slide-caption">
+              <span style="color: #ffd700">S0</span>,
+              <span style="color: #6495ed">S1</span>,
+              <span style="color: #ff796c">G0</span>和<span
+                style="color: #c79fef"
+                >G1</span
+              >召回率, @confidence \( \ge 0.25 \)
+            </p>
+          </section>
+
+          <section>
+            <h2>边界框偏移</h2>
+          </section>
+
+          <section>
+            <h2>边界框偏移</h2>
+            <div class="static-figure-container">
+              <img
+                class="magnifiable"
+                data-fig-name="offset.png"
+                alt="Static figure example"
+              />
+            </div>
+            <p>
+              x轴方向偏移量，<span style="color: #ffd700">S0</span>约为<span
+                style="color: #ffd700"
+                >1</span
+              >像素, <span style="color: #6495ed">S1</span>约为<span
+                style="color: #6495ed"
+                >3</span
+              >像素, <span style="color: #ff796c">G0</span>约为<span
+                style="color: #ff796c"
+                >2</span
+              >像素，<span style="color: #c79fef">G1</span>约为<span
+                style="color: #c79fef"
+                >5</span
+              >像素，转换成原始图像后，约为<span style="color: #ffd700">2</span
+              >，<span style="color: #6495ed">6</span>，<span
+                style="color: #ff796c"
+                >4</span
+              >和<span style="color: #c79fef">10</span>像素。
+            </p>
+            <p>
+              y轴方向偏移量，对所有谱迹，约为<span class="text-green-400"
+                >5</span
+              >像素，转换成原始图像后约为<span class="text-green-400">1</span
+              >像素。
+            </p>
+          </section>
+        </section>
+
+        <section>
+          <section class="center-content">
+            <h2>YOLOv5 网络架构解析</h2>
+            <div style="margin-top: 50px"></div>
+            <p class="text-3xl mt-6 text-gray-300">YOLO如何高效特征提取</p>
+          </section>
+
+          <!-- Slide 1: Core Modules -->
+          <section>
+            <h3 class="text-4xl font-bold text-yellow-200 mb-8">
+              核心模块：搭建高性能网络的基石
+            </h3>
+            <div class="grid grid-cols-3 gap-8">
+              <div class="item-card">
+                <div class="text-center mb-4">
+                  <i class="fas fa-layer-group text-5xl text-blue-300"></i>
+                </div>
+                <h4
+                  class="text-2xl font-semibold text-blue-200 mb-3 text-center"
+                >
+                  ConvBNSiLU
+                </h4>
+                <p style="font-size: 20pt">
+                  网络的基础组件,由以下三部分串联而成，能稳定高效地提取局部特征：
+                </p>
+                <ul class="space-y2 text-left text-4xl">
+                  <li style="font-size: 20pt">
+                    卷积层(Conv)：使用可学习的滤波器（或称为卷积核）在输入数据上滑动，以检测边缘、纹理等空间模式。
+                  </li>
+                  <li style="font-size: 20pt">
+                    批量归一化(BN)：对卷积层的输出进行标准化处理，使其均值接近0，方差接近1。这有助于稳定训练过程，防止模型过拟合。
+                  </li>
+                  <li style="font-size: 20pt">
+                    激活函数(SiLU)：一种非线性激活函数，它在平衡计算效率和模型精度方面表现出色。
+                  </li>
+                </ul>
+              </div>
+              <div class="item-card">
+                <div class="text-center mb-4">
+                  <i class="fas fa-cogs text-5xl text-green-300"></i>
+                </div>
+                <h4
+                  class="text-2xl font-semibold text-green-200 mb-3 text-center"
+                >
+                  C3 模块
+                </h4>
+                <p style="font-size: 20pt">
+                  这是YOLOv5中用于优化特征提取的核心模块。
+                  它借鉴了ResNet和CSPNet的思想，通过“跨阶段局部连接”（Cross
+                  Stage Partial
+                  connections）和瓶颈结构（Bottleneck）来减少计算量和内存占用。
+                </p>
+                <p style="font-size: 20pt">
+                  其双路径设计（一条主路经过瓶颈压缩，一条支路保留原始细节）能够在不牺牲性能的前提下，高效地融合高层语义特征和低层细节特征。
+                </p>
+              </div>
+              <div class="item-card">
+                <div class="text-center mb-4">
+                  <i class="fas fa-sitemap text-5xl text-red-300"></i>
+                </div>
+                <h4
+                  class="text-2xl font-semibold text-red-200 mb-3 text-center"
+                >
+                  SPPF 模块
+                </h4>
+                <p style="font-size: 20pt">
+                  快速空间金字塔池化。该模块通过对特征图进行不同尺度的池化操作，然后将结果拼接，生成一个固定长度的输出。
+                </p>
+                <p style="font-size: 20pt">
+                  这使得网络能够处理不同尺寸的输入图像，并有效地融合多尺度上下文信息，增强对不同大小目标的检测能力。
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Slide 2: Architecture -->
+          <section>
+            <h3 class="text-4xl font-bold text-yellow-200 mb-8">
+              三段式架构：从像素到预测的流水线
+            </h3>
+            <div class="network-diagram flex-grow items-stretch">
+              <div class="network-component flex flex-col justify-center">
+                <i class="fas fa-bone text-5xl text-blue-300 mb-4"></i>
+                <p
+                  class="mb-2"
+                  style="font-family: XiqueGuzidian; font-size: 50pt"
+                >
+                  Backbone
+                </p>
+                <p></p>
+                <p>主要的特征提取器，它从输入中捕捉层次特征。</p>
+                <p>YOLOv5 的骨干由ConvBNSiLU和C3组成。</p>
+              </div>
+              <div class="network-arrow">
+                <i class="fas fa-arrow-right"></i>
+              </div>
+              <div class="network-component flex flex-col justify-center">
+                <i
+                  class="fas fa-project-diagram text-5xl text-green-300 mb-4"
+                ></i>
+                <p
+                  class="mb-2"
+                  style="font-family: XiqueGuzidian; font-size: 50pt"
+                >
+                  Neck
+                </p>
+                <p>
+                  作为中介进一步提炼骨干提取的特征。负责将不同层级的特征进行有效融合与增强。
+                </p>
+                <p>特征双向融合模式，信息在自底向上和自顶向下两个方向流动。</p>
+                <p>YOLOv5使用了SPPF和CSP-PAN结构。</p>
+              </div>
+              <div class="network-arrow">
+                <i class="fas fa-arrow-right"></i>
+              </div>
+              <div class="network-component flex flex-col justify-center">
+                <i class="fas fa-crosshairs text-5xl text-red-300 mb-4"></i>
+                <p
+                  class="mb-2"
+                  style="font-family: XiqueGuzidian; font-size: 50pt"
+                >
+                  Head
+                </p>
+                <p></p>
+                <p class="text-gray-300">
+                  网络的头部生成输出，计算边界框、类别概率或其他相关信息。
+                </p>
+                <p>YOLOv5中为GIoU loss + NMS(极大值抑制)</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Slide 3: Why it is efficient -->
+          <section>
+            <h3 class="text-4xl font-bold text-yellow-200 mb-8">
+              高效特征提取的奥秘
+            </h3>
+            <div class="grid grid-cols-2 grid-rows-2 gap-8">
+              <div class="item-card">
+                <div class="flex items-center mb-3">
+                  <i class="fas fa-stream text-3xl text-teal-300 mr-4"></i>
+                  <p
+                    class="text-2xl font-semibold text-teal-200"
+                    style="font-family: XiqueGuzidian; font-size: 25pt"
+                  >
+                    分层特征提取
+                  </p>
+                </div>
+                <p>
+                  通过逐层卷积，网络模仿生物视觉系统，实现了从简单模式到复杂概念的特征抽象。
+                </p>
+              </div>
+              <div class="item-card">
+                <div class="flex items-center mb-3">
+                  <i
+                    class="fas fa-tachometer-alt text-3xl text-purple-300 mr-4"
+                  ></i>
+                  <p
+                    class="text-2xl font-semibold text-purple-200"
+                    style="font-family: XiqueGuzidian; font-size: 25pt"
+                  >
+                    计算效率优化
+                  </p>
+                </div>
+                <p>
+                  C3等模块的轻量化设计，在减少计算量的同时保证了特征的丰富性与梯度传播的有效性。
+                </p>
+              </div>
+              <div class="item-card">
+                <div class="flex items-center mb-3">
+                  <i
+                    class="fas fa-expand-arrows-alt text-3xl text-orange-300 mr-4"
+                  ></i>
+                  <p
+                    class="text-2xl font-semibold text-orange-200"
+                    style="font-family: XiqueGuzidian; font-size: 25pt"
+                  >
+                    多尺度特征融合
+                  </p>
+                </div>
+                <p>
+                  颈部的CSP-PAN结构解决了同时检测大小不一目标的难题，对各种尺寸的目标都非常敏感。
+                </p>
+              </div>
+              <div class="item-card">
+                <div class="flex items-center mb-3">
+                  <i class="fas fa-crop-alt text-3xl text-indigo-300 mr-4"></i>
+                  <p
+                    class="text-2xl font-semibold text-indigo-200"
+                    style="font-family: XiqueGuzidian; font-size: 25pt"
+                  >
+                    灵活的输入适应性
+                  </p>
+                </div>
+                <p>
+                  SPPF模块使得网络能够处理不同尺寸的输入，增强了模型的鲁棒性和普适性。
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Conclusion Slide -->
+          <section class="center-content">
+            <h3 class="text-4xl font-bold text-yellow-200 mb-8">总结</h3>
+            <div style="margin-top: 50px"></div>
+            <p>
+              YOLOv5的成功，源于其<strong class="text-teal-300"
+                >模块的轻量化设计</strong
+              >、<strong class="text-teal-300">架构上的多尺度融合</strong
+              >以及<strong class="text-teal-300">对计算资源的精妙优化</strong
+              >，最终在速度与精度之间取得了出色的平衡。
+            </p>
+          </section>
+        </section>
+
+        <section>
+          <div class="flex flex-col text-white p-10 relative overflow-hidden">
+            <!-- Header -->
+            <div class="mb-6">
+              <h3 class="text-4xl font-bold text-yellow-200 mb-2">
+                YOLO在CSST光谱数据分析中的应用场景总结
+              </h3>
+            </div>
+            <!-- Introduction -->
+            <p class="text-2xl">
+              YOLO模型作为高效的目标检测算法，为CSST海量光谱数据分析提供了创新解决方案，以下是四大主要应用场景：
+            </p>
+            <div style="margin-top: 50px"></div>
+            <!-- Main Content - Application Scenarios -->
+            <div class="flex-grow grid grid-cols-2 gap-6">
+              <!-- Spectral Target Detection -->
+              <div class="item-card pt-6 pb-4 px-5 relative">
+                <div class="flex items-start mb-4">
+                  <div
+                    class="icon-container bg-yellow-900 bg-opacity-30 bg-gradient-to-br"
+                  >
+                    <i class="fas fa-bullseye text-3xl text-yellow-300"></i>
+                  </div>
+                  <div>
+                    <h4
+                      class="text-5xl font-semibold text-red-400 mb-3 from-red-500 to-red-700"
+                    >
+                      光谱目标检测
+                    </h4>
+                    <p class="text-yellow-200 text-xl">识别与提取光谱轨迹</p>
+                  </div>
+                </div>
+                <ul
+                  class="space-y-2 text-gray-300 text-2xl flex-grow text-left"
+                >
+                  <li class="flex items-start text-left">
+                    <i
+                      class="fas fa-check-circle text-green-300 mt-1 mr-2 text-left"
+                    ></i>
+                    <span>直接从原始二维光谱图像中精确识别天体光谱轨迹</span>
+                  </li>
+                  <li class="flex items-start text-left">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span
+                      >能够有效检测零级和一级光谱轨迹，即使在高度拥挤的天区</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span>能帮助解决无缝光谱直接成像缺失的问题</span>
+                  </li>
+                </ul>
+              </div>
+              <!-- Redshift Measurement -->
+              <div class="item-card pt-6 pb-4 px-5 relative">
+                <div class="flex items-start mb-4">
+                  <div
+                    class="icon-container bg-yellow-900 bg-opacity-30 rounded-full flex items-center justify-center mr-4 flex-shrink-0"
+                  >
+                    <i class="fas fa-chart-line text-3xl text-yellow-300"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-2xl font-semibold text-yellow-100 mb-1">
+                      红移测量
+                    </h4>
+                    <p class="text-yellow-200 text-xl">
+                      从分类到回归的天体距离估计
+                    </p>
+                  </div>
+                </div>
+                <ul class="space-y-2 text-gray-300 text-2xl flex-grow">
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span>将连续红移值映射到离散区间，转化为分类任务</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span>整合离散天体物理参数的估计，实现红移分箱预测</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span
+                      >未来研究方向：从原始光谱轨迹中直接、连续地预测红移值</span
+                    >
+                  </li>
+                </ul>
+              </div>
+              <!-- Celestial Object Classification -->
+              <div class="item-card pt-6 pb-4 px-5 relative">
+                <div class="flex items-start mb-4">
+                  <div
+                    class="icon-container bg-yellow-900 bg-opacity-30 rounded-full flex items-center justify-center mr-4 flex-shrink-0"
+                  >
+                    <i class="fas fa-sitemap text-3xl text-yellow-300"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-2xl font-semibold text-yellow-100 mb-1">
+                      天体分类/恒星光谱型分类
+                    </h4>
+                    <p class="text-yellow-200 text-xl">
+                      端到端的自动分类解决方案
+                    </p>
+                  </div>
+                </div>
+                <ul class="space-y-2 text-gray-300 text-2xl flex-grow">
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span
+                      >实现从原始二维光谱图像直接进行源分类（恒星/星系等）</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span>快速统计目标</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span>未来研究方向：从二维光谱图像中回归恒星参数</span>
+                  </li>
+                </ul>
+              </div>
+              <!-- Rare Celestial Object Identification -->
+              <div class="item-card pt-6 pb-4 px-5 relative">
+                <div class="flex items-start mb-4">
+                  <div
+                    class="icon-container bg-yellow-900 bg-opacity-30 rounded-full flex items-center justify-center mr-4 flex-shrink-0"
+                  >
+                    <i class="fas fa-gem text-3xl text-yellow-300"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-2xl font-semibold text-yellow-100 mb-1">
+                      稀有天体识别
+                    </h4>
+                    <p class="text-yellow-200 text-xl">发现宇宙珍宝</p>
+                  </div>
+                </div>
+                <ul class="space-y-2 text-gray-300 text-2xl flex-grow">
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span>通过学习特殊源特征，快速识别出特殊源</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span>提升探测完备性，发现传统方法可能遗漏的目标</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i class="fas fa-minus-circle text-red-400 mt-1 mr-2"></i>
+                    <span>依赖预先构建的星表</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <!-- Bottom decorative element -->
+          </div>
+        </section>
+
+        <!-- Slide 2: Advantages & Limitations -->
+        <section>
+          <div class="h-full flex flex-col">
+            <!-- Header -->
+            <div class="mb-4 text-center">
+              <h3 class="text-4xl font-bold text-yellow-200 mb-2">
+                YOLO与传统天文数据处理方法对比
+              </h3>
+            </div>
+            <!-- Main Content -->
+            <div class="flex-grow">
+              <!-- Comparison Table -->
+              <div class="grid grid-cols-2 gap-6 h-full">
+                <!-- YOLO Column -->
+                <div class="flex flex-col">
+                  <div
+                    class="bg-yellow-400 bg-opacity-20 rounded-t-lg p-3 text-center border-b-2 border-yellow-400"
+                  >
+                    <h4
+                      class="text-2xl font-semibold text-yellow-200 flex items-center justify-center"
+                    >
+                      <i class="fas fa-brain text-yellow-300 mr-3"></i>
+                      YOLO深度学习方法
+                    </h4>
+                  </div>
+                  <div
+                    class="p-4 flex-grow bg-black bg-opacity-20 rounded-b-lg"
+                  >
+                    <div class="grid grid-cols-2 grid-rows-2 gap-4 h-full">
+                      <div class="item-card">
+                        <h4 class="text-2xl text-yellow-300 mb-2">处理速度</h4>
+                        <p class="text-gray-300 text-base">
+                          初代YOLO在Titan X GPU上可达45 FPS，后续版本甚至超过150
+                          FPS，能高效处理海量天文图像。
+                        </p>
+                        <p class="mt-auto text-xl text-green-400">
+                          <i class="fas fa-check-circle mr-1"></i>
+                          极高的处理效率
+                        </p>
+                      </div>
+                      <div class="item-card">
+                        <h4 class="text-2xl text-yellow-300 mb-2">
+                          端到端处理
+                        </h4>
+                        <p class="text-gray-300 text-base">
+                          直接从原始二维光谱图像中检测、分类并分析光谱特征，实现端到端解决方案。
+                        </p>
+                        <p class="mt-auto text-xl text-green-400">
+                          <i class="fas fa-check-circle mr-1"></i> 避免误差累积
+                        </p>
+                      </div>
+                      <div class="item-card">
+                        <h4 class="text-2xl text-yellow-300 mb-2">特征学习</h4>
+                        <p class="text-gray-300 text-base">
+                          自动从数据中学习复杂特征，无需人工设计特征提取器，有助于发现未知模式。
+                        </p>
+                        <p class="mt-auto text-xl text-green-400">
+                          <i class="fas fa-check-circle mr-1"></i>
+                          强大的泛化能力
+                        </p>
+                      </div>
+                      <div class="item-card">
+                        <h4 class="text-2xl text-yellow-300 mb-2">
+                          全局信息利用
+                        </h4>
+                        <p class="text-gray-300 text-base">
+                          考虑整个图像的全局信息，更好地区分目标和背景，减少背景误检。
+                        </p>
+                        <p class="mt-auto text-xl text-green-400">
+                          <i class="fas fa-check-circle mr-1"></i>
+                          上下文感知能力
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Traditional Column -->
+                <div class="flex flex-col">
+                  <div
+                    class="bg-blue-500 bg-opacity-20 rounded-t-lg p-3 text-center border-b-2 border-blue-500"
+                  >
+                    <h4
+                      class="text-2xl font-semibold text-blue-200 flex items-center justify-center"
+                    >
+                      <i class="fas fa-cogs text-blue-300 mr-3"></i>
+                      传统天文数据处理方法
+                    </h4>
+                  </div>
+                  <div
+                    class="p-4 flex-grow bg-black bg-opacity-20 rounded-b-lg"
+                  >
+                    <div class="grid grid-cols-2 grid-rows-2 gap-4 h-full">
+                      <div class="item-card2">
+                        <h4 class="text-2xl text-blue-300 mb-2">处理速度</h4>
+                        <p class="text-gray-300 text-base">
+                          涉及源检测、交叉匹配、谱线提取、背景扣除等多个独立步骤，每步耗时较长。
+                        </p>
+                        <p class="mt-auto text-xl text-red-400">
+                          <i class="fas fa-times-circle mr-1"></i> 处理流程繁琐
+                        </p>
+                      </div>
+                      <div class="item-card2">
+                        <h4 class="text-2xl text-blue-300 mb-2">多步骤流程</h4>
+                        <p class="text-gray-300 text-base">
+                          多步骤流程容易导致误差在各阶段累积和传播，尤其在拥挤天区或处理暗弱目标时。
+                        </p>
+                        <p class="mt-auto text-xl text-red-400">
+                          <i class="fas fa-times-circle mr-1"></i> 误差累积问题
+                        </p>
+                      </div>
+                      <div class="item-card2">
+                        <h4 class="text-2xl text-blue-300 mb-2">特征提取</h4>
+                        <p class="text-gray-300 text-base">
+                          依赖预定义的模板或基于物理参数的模型，泛化能力受限于模型的完备性和先验知识。
+                        </p>
+                        <p class="mt-auto text-xl text-yellow-400">
+                          <i class="fas fa-exclamation-circle mr-1"></i>
+                          物理解释性较强
+                        </p>
+                      </div>
+                      <div class="item-card2">
+                        <h4 class="text-2xl text-blue-300 mb-2">数据依赖性</h4>
+                        <p class="text-gray-300 text-base">
+                          常需依赖预先构建的天体测光星表和光度红移星表，可能引入系统误差。
+                        </p>
+                        <p class="mt-auto text-xl text-red-400">
+                          <i class="fas fa-times-circle mr-1"></i> 中间产物依赖
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Advantages and Limitations Slide -->
+        <section>
+          <div class="h-full flex flex-col">
+            <!-- Header -->
+            <div class="mb-4 text-center">
+              <h3 class="text-4xl font-bold text-yellow-200 mb-2">
+                YOLO模型的优势与局限
+              </h3>
+            </div>
+            <!-- Main Content -->
+            <div class="flex-grow">
+              <div class="grid grid-cols-2 gap-6 h-full">
+                <!-- Advantages Section -->
+                <div class="flex flex-col">
+                  <div
+                    class="bg-green-500 bg-opacity-20 rounded-t-lg p-3 text-center border-b-2 border-green-400"
+                  >
+                    <h4
+                      class="text-2xl font-semibold text-green-300 flex items-center justify-center"
+                    >
+                      <i class="fas fa-check text-green-400 mr-3"></i>
+                      优势
+                    </h4>
+                  </div>
+                  <div
+                    class="p-4 flex-grow bg-black bg-opacity-20 rounded-b-lg"
+                  >
+                    <div class="grid grid-cols-2 grid-rows-2 gap-4 h-full">
+                      <div class="item-card2">
+                        <h4 class="font-medium text-green-200 text-2xl mb-2">
+                          处理速度与效率
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          YOLO模型处理速度极快，目前的检测任务可以做到分钟级处理。有希望实现实时检测，或应对瞬变源。
+                        </p>
+                      </div>
+                      <div class="item-card2">
+                        <h4 class="font-medium text-green-200 text-2xl mb-2">
+                          端到端处理能力
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          能够直接从原始或少量预处理的2D图像中检测、分类并分析光谱特征，避免误差累积。
+                        </p>
+                      </div>
+                      <div class="item-card2">
+                        <h4 class="font-medium text-green-200 text-2xl mb-2">
+                          特征学习能力
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          能够自动从数据中学习复杂的特征，无需人工设计特征提取器，对多样化天文目标具有潜力。
+                        </p>
+                      </div>
+                      <div class="item-card2">
+                        <h4 class="font-medium text-green-200 text-2xl mb-2">
+                          全局信息利用
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          在进行预测时会考虑整个图像的全局信息，更好地区分目标和背景，减少背景误检。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Limitations Section -->
+                <div class="flex flex-col">
+                  <div
+                    class="bg-red-500 bg-opacity-20 rounded-t-lg p-3 text-center border-b-2 border-red-400"
+                  >
+                    <h4
+                      class="text-2xl font-semibold text-red-300 flex items-center justify-center"
+                    >
+                      <i
+                        class="fas fa-exclamation-triangle text-red-400 mr-3"
+                      ></i>
+                      局限性
+                    </h4>
+                  </div>
+                  <div
+                    class="p-4 flex-grow bg-black bg-opacity-20 rounded-b-lg"
+                  >
+                    <div class="grid grid-cols-2 grid-rows-2 gap-4 h-full">
+                      <div class="item-card3">
+                        <h4 class="font-medium text-red-200 text-2xl mb-2">
+                          可解释性不足
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          深度学习模型的可解释性相对较差，难以理解模型内部工作原理，影响科学结果的可验证性。
+                        </p>
+                      </div>
+                      <div class="item-card3">
+                        <h4 class="font-medium text-red-200 text-2xl mb-2">
+                          对训练数据依赖
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          模型性能高度依赖于训练数据的质量和多样性，样本不均衡问题可能影响特定天体的检测精度。
+                        </p>
+                      </div>
+                      <div class="item-card3">
+                        <h4 class="font-medium text-red-200 text-2xl mb-2">
+                          计算资源需求
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          尽管YOLO模型相对高效，但处理CSST海量数据仍需强大的计算能力支持，增加硬件投入成本。
+                        </p>
+                      </div>
+                      <div class="item-card3">
+                        <h4 class="font-medium text-red-200 text-2xl mb-2">
+                          特定任务精度
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          在某些特定任务下，精度很难接近传统任务，因为传统任务做的是测量，机器学习做的是预测。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h3>展望</h3>
+          <div style="margin-top: 50px"></div>
+          <div class="grid grid-cols-3 grid-rows-2 gap-12">
+            <div class="item-card">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-wave-square text-3xl text-teal-300 mr-4"></i>
+                <p
+                  class="text-2xl text-teal-200"
+                  style="font-family: XiqueGuzidian; font-size: 25pt"
+                >
+                  处理连续型天体物理参数
+                </p>
+              </div>
+              <p style="font-size: 20pt">
+                改进模型架构（特别是头部），使其能够直接进行回归预测，例如星系的连续红移值、恒星的金属丰度等，以替代当前的分类分箱策略。
+              </p>
+            </div>
+            <div class="item-card">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-low-vision text-3xl text-purple-300 mr-4"></i>
+                <p
+                  class="text-2xl text-purple-200"
+                  style="font-family: XiqueGuzidian; font-size: 25pt"
+                >
+                  提升对低信噪比目标的灵敏度
+                </p>
+              </div>
+              <p style="font-size: 20pt">
+                优化特征提取层和损失函数，增强模型在低信噪比条件下检测暗弱天体的能力，减少漏检。
+              </p>
+            </div>
+            <div class="item-card">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-brain text-3xl text-orange-300 mr-4"></i>
+                <p
+                  class="text-2xl text-orange-200"
+                  style="font-family: XiqueGuzidian; font-size: 25pt"
+                >
+                  融合其他深度学习技术
+                </p>
+              </div>
+              <p style="font-size: 20pt">
+                探索结合注意力机制（Attention）、Transformer等先进技术，进一步提升模型的精度和鲁棒性。
+              </p>
+            </div>
+            <div class="item-card">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-brain text-3xl text-blue-300 mr-4"></i>
+                <p
+                  class="text-2xl text-blue-200"
+                  style="font-family: XiqueGuzidian; font-size: 25pt"
+                >
+                  提高计算速度（实时检测）
+                </p>
+              </div>
+              <p style="font-size: 20pt">
+                目前处理图片能力达1分钟每张，计算速度还有优化空间。
+              </p>
+            </div>
+
+            <div class="item-card">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-brain text-3xl text-green-300 mr-4"></i>
+                <p
+                  class="text-2xl text-green-200"
+                  style="font-family: XiqueGuzidian; font-size: 25pt"
+                >
+                  离群检测
+                </p>
+              </div>
+              <p style="font-size: 20pt">
+                随着观测数据越来越多，我们可能不会在“平平无奇”的源上花费太多精力。需要一个离群检测模块，自动识别那些与众不同的天体，帮助我们发现新的科学现象。
+              </p>
+            </div>
+
+            <div class="item-card">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-atom text-3xl text-red-300 mr-4"></i>
+                <p
+                  class="text-2xl text-red-200"
+                  style="font-family: XiqueGuzidian; font-size: 25pt"
+                >
+                  端到端物理参数提取
+                </p>
+              </div>
+              <p style="font-size: 20pt">
+                构建一个完全自动化的端到端框架，直接从原始二维光谱图像中提取天体物理参数，最大限度地减少人工干预和误差传播。
+              </p>
+            </div>
+          </div>
+        </section>
+                <section data-state="credits-roll">
+            <div class="credits-roll-container">
+                <div class="credits-content" style="transform: scale(0.85);">
+                    <h2 class="text-4xl font-bold text-yellow-300 mb-6">致谢</h2>
+              <div style="margin-top: 50px"></div>
+
+              <h3>合作导师</h3>
+              <p>刘超 研究员</p>
+              <p class="role">提供核心idea</p>
+              <div style="margin-top: 50px"></div>
+
+              <h3>核心贡献</h3>
+              <p>周颖颖</p>
+              <p class="role">模型训练 & 结果验证</p>
+              <div style="margin-top: 50px"></div>
+              <p>田浩</p>
+              <p class="role">银河系仿真星表 & 催写文章</p>
+              <div style="margin-top: 50px"></div>
+              <p>张鑫</p>
+              <p class="role">无缝光谱仿真</p>
+              <div style="margin-top: 50px"></div>
+              <p>李楠</p>
+              <p class="role">机器学习科学讨论</p>
+              <div style="margin-top: 50px"></div>
+              <div style="margin-top: 50px"></div>
+
+              <h3>特别鸣谢</h3>
+              <div style="margin-top: 50px"></div>
+              <p style="font-size:30pt">感谢所有参与CSST项目的科学家和工程师们，</p>
+              <p style="font-size:30pt">特别是那些在无缝光谱仿真和流水线做出贡献的同事们。</p>
+              <p style="font-size:30pt">他们使得在CSST发射前，</p>
+              <p style="font-size:30pt">科学预研究能顺利开展。</p>
+              <div style="margin-top: 50px"></div>
+
+              <h3>资金支持</h3>
+              <div style="margin-top: 50px"></div>
+              <p class="funding-item" style="font-size:30pt">
+                本研究得到了北京市自然科学基金青年项目（No.
+                1244061）、中国载人航天工程空间科学与应用项目（No.
+                CMS-CSST-2021-B03）、国家重点研发计划（No.
+                2022YFF0504200）以及中国载人航天工程空间应用系统的支持。
+              </p>
+
+              <h3>技术支持</h3>
+              <p style="font-size:40pt">国家天文台Geranium高性能GPU计算集群</p>
+
+              <h3></h3>
+              <p class="text-gray-500 text-lg">--- The End ---</p>
+              <p class="text-gray-500" style="font-size:20pt">--- 结尾有彩蛋 ---</p>
+            </div>
+          </div>
+                      <div id="yolo-countdown"></div>
+        </section>
+
+
+      </div>
+    </div>
+
+
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+    <script>
+      // --- MODE CONTROL ---
+      // Set to true to load assets from local folders ('figs/', 'fonts/').
+      // Set to false to load assets from your GitHub Pages URLs.
+      const isLocalMode = true;
+
+      function setupAssetPaths() {
+        // Define base paths
+        const localFigPath = "figs/";
+        const remoteFigPath =
+          "https://neutrino137.github.io/my-figs-lib/figs-yolo/";
+        const localFontPath = "fonts/";
+        const remoteFontPath =
+          "https://neutrino137.github.io/my-fonts-lib/chinese/";
+
+        const figPath = isLocalMode ? localFigPath : remoteFontPath;
+        const fontPath = isLocalMode ? localFontPath : remoteFontPath;
+
+        // --- 1. DYNAMICALLY INJECT FONT CSS ---
+        const fontFaces = `
+                @font-face {
+                  font-family: 'XiqueGuzidian';
+                  src: url('${fontPath}xiqueguzidian.ttf') format('truetype');
+                }
+
+                @font-face {
+                  font-family: 'FZKai';
+                  src: url('${fontPath}FangZhengShengShiKaiShuJianTi-1.ttf') format('truetype');
+                }
+                @font-face {
+                  font-family: 'XiqueSong';
+                  src: url('${fontPath}xiquesong.ttf') format('truetype');
+                }
+                @font-face {
+                  font-family: 'optima';
+                  src: url('${fontPath}optima-regular-1.ttf') format('truetype');
+                }
+            `;
+        const styleElement = document.createElement("style");
+        styleElement.innerHTML = fontFaces;
+        document.head.appendChild(styleElement);
+
+        // --- 2. DYNAMICALLY SET FIGURE BACKGROUNDS and srcs ---
+        const figureElements = document.querySelectorAll("[data-fig-name]");
+        figureElements.forEach((el) => {
+          const figName = el.getAttribute("data-fig-name");
+          if (figName) {
+            const fullPath = figPath + figName;
+            // Check if the element is an IMG tag or a DIV
+            if (el.tagName.toLowerCase() === "img") {
+              el.src = fullPath;
+            } else {
+              el.style.backgroundImage = 'url("' + fullPath + '")';
+            }
+          }
+        });
+      }
+      // 新增：图片点击放大功能
+      function enableImageMagnification() {
+        const revealContainer = document.querySelector(".reveal");
+
+        const removeMagnifiedOverlay = () => {
+          const overlay = document.querySelector(".magnify-overlay");
+          if (overlay) {
+            overlay.remove();
+          }
+        };
+
+        revealContainer.addEventListener("click", (event) => {
+          // 查找被点击元素最近的、可作为图片容器的祖先元素
+          const container = event.target.closest(
+            ".static-figure-container, .magnifiable-container, .figure-with-caption"
+          );
+
+          if (container) {
+            // 在容器内，找到那个当前可见的图片
+            // 在自动动画中，可见图片的opacity不为 '0'
+            let visibleImg = container.querySelector(
+              'img:not([style*="opacity: 0"])'
+            );
+
+            // 如果是静态容器，或者上面的选择器没找到，就用第一个img作为备选
+            if (!visibleImg) {
+              visibleImg = container.querySelector("img");
+            }
+
+            // 确认这张可见的图片是可放大的
+            if (
+              visibleImg &&
+              visibleImg.classList.contains("magnifiable") &&
+              visibleImg.src
+            ) {
+              event.stopPropagation();
+              removeMagnifiedOverlay();
+
+              const overlay = document.createElement("div");
+              overlay.classList.add("magnify-overlay");
+
+              const magnifiedImage = document.createElement("img");
+              magnifiedImage.src = visibleImg.src;
+
+              overlay.appendChild(magnifiedImage);
+              document.body.appendChild(overlay);
+
+              overlay.addEventListener("click", () => {
+                overlay.remove();
+              });
+            }
+          }
+        });
+
+        Reveal.on("slidechanged", removeMagnifiedOverlay);
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            removeMagnifiedOverlay();
+          }
+        });
+      }
+
+      // Initialize Reveal.js
+      Reveal.initialize({
+        controls: true,
+        progress: false,
+        history: true,
+        center: true,
+        hash: true,
+        loop: false,
+        autoSlide: 0,
+        autoSlideStoppable: true,
+        transition: "slide",
+        backgroundTransition: "fade",
+        autoAnimateEasing: "ease-in-out",
+        autoAnimateDuration: 2.0,
+        autoAnimateUnmatched: true,
+        width: 1600,
+        height: 900,
+        margin: 0.04,
+        minScale: 0.05,
+        maxScale: 2.0,
+      });
+
+      // Setup assets after Reveal.js is ready to ensure DOM is available
+      Reveal.on("ready", (event) => {
+        setupAssetPaths();
+        enableImageMagnification();
+      });
+
+      // Global timer IDs
+      let easterEggDelayTimerId = null;
+      let countdownIntervalId = null;
+
+      // Generate blinking stars for the global background
+      function createGlobalStars() {
+        const starBg = document.getElementById("star-bg");
+        if (!starBg) return;
+        starBg.innerHTML = "";
+        const numberOfStars = 200;
+
+        for (let i = 0; i < numberOfStars; i++) {
+          let star = document.createElement("div");
+          star.className = "star";
+
+          let size = Math.random() * 2 + 1;
+          star.style.width = size + "px";
+          star.style.height = star.style.width;
+
+          star.style.top = Math.random() * 100 + "%";
+          star.style.left = Math.random() * 100 + "%";
+
+          star.style.animationDelay = Math.random() * 3 + "s";
+          star.style.animationDuration = Math.random() * 2 + 2 + "s";
+
+          starBg.appendChild(star);
+        }
+      }
+
+      // --- YOLO Easter Egg ---
+      function activateYoloMode() {
+        const starBg = document.getElementById("star-bg");
+        const stars = starBg.querySelectorAll(".star");
+
+        stars.forEach((star, index) => {
+          setTimeout(() => {
+            if (!document.querySelector('[data-state="credits-roll"].present'))
+              return; // Stop if slide changed
+            const box = document.createElement("div");
+            box.className = "yolo-box";
+
+            const padding = 6;
+            const size = star.offsetWidth;
+
+            box.style.left = `${star.offsetLeft - padding}px`;
+            box.style.top = `${star.offsetTop - padding}px`;
+            box.style.width = `${size + padding * 2}px`;
+            box.style.height = `${size + padding * 2}px`;
+
+            const label = document.createElement("div");
+            label.className = "yolo-label";
+            const confidence = (Math.random() * 0.15 + 0.84).toFixed(2);
+            label.textContent = `star ${confidence}`;
+
+            box.appendChild(label);
+            starBg.appendChild(box);
+
+            requestAnimationFrame(() => {
+              box.style.opacity = "1";
+            });
+          }, index * 25); // Staggered appearance
+        });
+      }
+
+      function deactivateYoloMode() {
+        const boxes = document.querySelectorAll(".yolo-box");
+        boxes.forEach((box) => box.remove());
+      }
+      
+      // Resets all timers and removes the easter egg effects.
+      function resetCreditsRoll() {
+        // Stop animation
+        const content = document.querySelector('.credits-content');
+        if (content) {
+            content.style.animation = 'none';
+        }
+
+        // Clear timers
+        if (easterEggDelayTimerId) {
+            clearTimeout(easterEggDelayTimerId);
+            easterEggDelayTimerId = null;
+        }
+        if (countdownIntervalId) {
+            clearInterval(countdownIntervalId);
+            countdownIntervalId = null;
+        }
+        const countdownEl = document.getElementById("yolo-countdown");
+        if (countdownEl) {
+            countdownEl.style.opacity = '0';
+        }
+        deactivateYoloMode();
+      }
+
+      // --- Credits Roll Logic ---
+      function startCreditsRoll() {
+        // Trigger animation
+        const content = document.querySelector('.credits-content');
+        if (content) {
+            content.style.animation = 'scroll-up-in-slide 25s linear forwards';
+        }
+
+        const startCountdown = () => {
+          const countdownEl = document.getElementById("yolo-countdown");
+          if (!countdownEl) return;
+
+          let count = 3;
+          countdownEl.textContent = count;
+          countdownEl.style.opacity = "1";
+
+          countdownIntervalId = setInterval(() => {
+            if (!document.querySelector('[data-state="credits-roll"].present')) {
+              clearInterval(countdownIntervalId);
+              return;
+            }
+            count--;
+            if (count > 0) {
+              countdownEl.textContent = count;
+            } else {
+              clearInterval(countdownIntervalId);
+              countdownIntervalId = null;
+              countdownEl.style.opacity = "0";
+              setTimeout(() => {
+                // Check if element exists before modifying it
+                const el = document.getElementById("yolo-countdown");
+                if (el) el.style.display = "none";
+                activateYoloMode();
+              }, 500);
+            }
+          }, 1000);
+        };
+
+        // Reset display style in case it was set to 'none' from a previous run
+        const countdownEl = document.getElementById("yolo-countdown");
+        if(countdownEl) countdownEl.style.display = 'block';
+
+        // Start the countdown after the scrolling animation finishes (25s)
+        easterEggDelayTimerId = setTimeout(startCountdown, 25000); 
+      }
+
+      // Create stars and set up slide change events when the presentation is ready
+      Reveal.on("ready", (event) => {
+        createGlobalStars();
+
+        Reveal.on("slidechanged", (event) => {
+          // Reset and stop when leaving the credits slide
+          if (
+            event.previousSlide &&
+            event.previousSlide.dataset.state === "credits-roll"
+          ) {
+            resetCreditsRoll();
+          }
+          // Start the roll and timers when entering the credits slide
+          if (event.currentSlide.dataset.state === "credits-roll") {
+            startCreditsRoll();
+          }
+        });
+
+        // Initial check in case the presentation loads on the credits slide
+        if (Reveal.getCurrentSlide().dataset.state === "credits-roll") {
+          startCreditsRoll();
+        }
+      });
+
+      // Gemini API Feature
+      const geminiButton = document.getElementById("gemini-trigger-button");
+      const geminiResponseContainer = document.getElementById(
+        "gemini-response-container"
+      );
+
+      if (geminiButton && geminiResponseContainer) {
+        geminiButton.addEventListener("click", async () => {
+          geminiResponseContainer.innerHTML =
+            '<div class="spinner"></div> 获取解读中...';
+          geminiResponseContainer.classList.add("loading");
+          geminiButton.disabled = true;
+
+          const prompt =
+            "Imagine an astronomical object suggested by this visual (which might be a segment of a larger image, like a red cosmic structure). Describe this cosmic entity in a captivating and imaginative way suitable for a science presentation, in 2-3 short paragraphs. Make it sound wondrous and mysterious.";
+
+          try {
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = "";
+            const apiUrl =
+              "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" +
+              apiKey;
+
+            const response = await fetch(apiUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+              throw new Error("API 请求失败，状态码：" + response.status);
+            }
+
+            const result = await response.json();
+
+            let text = "抱歉，目前无法获取描述。";
+            if (
+              result.candidates &&
+              result.candidates.length > 0 &&
+              result.candidates[0].content &&
+              result.candidates[0].content.parts &&
+              result.candidates[0].content.parts.length > 0
+            ) {
+              text = result.candidates[0].content.parts[0].text;
+              text = text
+                .split("\n\n")
+                .map((p) => "<p>" + p.replace(/\n/g, "<br>") + "</p>")
+                .join("");
+            }
+            geminiResponseContainer.innerHTML = text;
+          } catch (error) {
+            console.error("调用 Gemini API 时出错:", error);
+            geminiResponseContainer.innerHTML =
+              "错误：" + error.message + " 请检查控制台。";
+          } finally {
+            geminiResponseContainer.classList.remove("loading");
+            geminiButton.disabled = false;
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
