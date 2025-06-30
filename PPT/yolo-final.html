@@ -2519,7 +2519,7 @@
           <h2>模型性能评估指标</h2>
           <div class="iou-container">
             <div class="iou-explanation">
-              <p class="text-5xl">IoU (交并比)</p>
+              <p class="text-3xl">IoU (交并比)</p>
               <pre><code class="text-blue-300" style="font-size: 0.8em; padding: 10px; border-radius: 5px;">IoU = Area of Overlap / Area of Union</code></pre>
               <p class="text-2xl">
                 交并比（Intersection over
@@ -2560,7 +2560,7 @@
               </div>
             </div>
           </div>
-          <div class="metric-grid">
+          <div class="grid grid-cols-3 gap-4 mt-8">
             <div class="item-card">
               <p class="text-blue-300 text-4xl">
                 <i class="fas fa-bullseye mr-2 text-blue-300"></i>精确率/查准率
@@ -2579,8 +2579,7 @@
                 在所有真实的“正例”中，被模型成功预测出来的比例。衡量模型是否“找得全”。
               </p>
             </div>
-          </div>
-          <div class="item-card" style="margin-top: 20px">
+             <div class="item-card">
             <p class="text-blue-300 text-4xl">
               <i class="fas fa-chart-line mr-2 text-blue-300"></i>mAP
               (平均精度均值)
@@ -2589,6 +2588,7 @@
               mAP（mean Average
               Precision）是衡量目标检测模型综合性能的核心指标。它通过计算每个类别下的平均精度（AP），然后对所有类别的AP值求平均得到。一个高mAP值意味着模型在所有类别上都具有高精确率和高召回率。AP为Precision-Recall曲线面积。
             </p>
+          </div>
           </div>
         </section>
 
