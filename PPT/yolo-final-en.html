@@ -1,0 +1,4876 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>yolo</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/night.min.css"
+      id="theme"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://picture-search.tiangong.cn/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .font-gzd {
+        font-family: "Italiana", serif;
+      }
+
+      .font-fzk {
+        font-family: "FZKai", serif;
+      }
+
+      .font-xqs {
+        font-family: "optima", "XiqueSong", serif;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 200px 1fr; /* Left column 80px, right column auto */
+        gap: 1rem;
+        align-items: center;
+      }
+      .text-grid-container {
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(5, 1fr);
+        gap: 15px;
+        height: 100%;
+      }
+      .vertical-title-layout {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 50px;
+      }
+      .vertical-title {
+        writing-mode: vertical-lr; /* Vertical text, right-to-left */
+        text-orientation: mixed;
+        font-size: 1.8em;
+      }
+
+      .reveal p {
+        line-height: 1.3;
+        /* Default is 1.2 */
+        margin-bottom: 0.3em !important;
+      }
+
+      .small-target {
+        width: 8px;
+        height: 8px;
+        background-color: #facc15;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #facc15;
+      }
+
+      .large-aspect {
+        width: 100px;
+        height: 8px;
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        border-radius: 4px;
+      }
+
+      .info-asymmetry {
+        width: 100px;
+        height: 30px;
+        position: relative;
+      }
+
+      .wavelength {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 70%;
+        background: linear-gradient(90deg, #facc15, #eab308, #facc15);
+        border-radius: 4px 4px 0 0;
+      }
+
+      .spatial {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 30%;
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        border-radius: 0 0 4px 4px;
+      }
+
+      /* Apply Exo 2 font and then your custom Chinese font as fallbacks */
+      .reveal .slides {
+        font-family: "optima", "XiqueSong", "FZkai", "Noto Sans SC",
+          "Microsoft YaHei", "PingFang SC", sans-serif;
+        --r-main-font-size: 24px;
+      }
+
+      .reveal .slides h1 {
+        font-family: "Italiana", "Noto Sans SC", "Microsoft YaHei",
+          "PingFang SC", sans-serif;
+        font-size: 2em;
+      }
+
+      .reveal .slides h2 {
+        font-family: "Exo 2", "Italiana", "Noto Sans SC", "Microsoft YaHei",
+          "PingFang SC", sans-serif;
+        font-size: 1.6em;
+      }
+
+      .reveal .slides h3 {
+        font-family: "Italiana", "Noto Sans SC", "Microsoft YaHei",
+          "PingFang SC", sans-serif;
+        font-size: 1.2em;
+      }
+
+      .reveal .slides h4 {
+        font-family: "Italiana", "Noto Sans SC", "Microsoft YaHei",
+          "PingFang SC", sans-serif;
+        font-size: 0.8em;
+      }
+
+      /* Global slide adjustments for title positioning */
+      .reveal .slides section {
+        justify-content: flex-start !important;
+        /* Override default centering to align content to the top */
+        padding-top: 8px;
+        /* Add padding to the top */
+      }
+      .reveal .slides section.center-content {
+        justify-content: center !important;
+      }
+
+
+      /* Starry background container for ALL slides */
+      #star-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      /* Individual star styling for the global background */
+      .star {
+        position: absolute;
+        background-color: white;
+        border-radius: 50%;
+        animation: twinkle 3s infinite ease-in-out;
+      }
+
+      /* Twinkle animation keyframes */
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.1;
+          transform: scale(0.8);
+        }
+
+        50% {
+          opacity: 0.8;
+          transform: scale(1.2);
+        }
+      }
+
+      /* Styles for the stripe animation (subsequent slides) */
+      .reveal .slides .stripe-figure-stage {
+        margin: 10px auto;
+        display: grid;
+        position: relative;
+      }
+
+      .reveal .slides .stripe-figure-stage > div[data-id^="h_s"] {
+        width: 100%;
+        height: 100%;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+        /* background-size is now handled by inline styles for better animation control */
+        background-position: center;
+      }
+
+      /* General slide styling for animation slides */
+      .reveal .slides section[data-auto-animate] h2 {
+        margin-bottom: 15px;
+      }
+
+      .reveal .slides section[data-auto-animate] p.slide-caption {
+        margin-top: 15px;
+        font-size: 0.85em;
+      }
+
+      /* Individual Point Card Styling with Hover Effect */
+      .item-card {
+        background-color: rgba(10, 25, 47, 0.8);
+        border-radius: 0.75rem; /* 12px */
+        padding: 1.5rem; /* 24px */
+        transition: all 0.3s ease-in-out;
+        border-left: 4px solid transparent;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .item-card:hover {
+        transform: translateY(-8px) scale(1.03);
+        background-color: rgba(32, 76, 142, 0.9);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+        border-left-color: #fff564;
+      }
+
+      .item-card2 {
+        background-color: rgba(10, 25, 47, 0.8);
+        border-radius: 0.75rem; /* 12px */
+        padding: 1.5rem; /* 24px */
+        transition: all 0.3s ease-in-out;
+        border-left: 4px solid transparent;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .item-card2:hover {
+        transform: translateY(-8px) scale(1.03);
+        background-color: #39c2d76a;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+        border-left-color: #6498ff;
+      }
+
+      .item-card3 {
+        background-color: rgba(10, 25, 47, 0.8);
+        border-radius: 0.75rem; /* 12px */
+        padding: 1.5rem; /* 24px */
+        transition: all 0.3s ease-in-out;
+        border-left: 4px solid transparent;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .item-card3:hover {
+        transform: translateY(-8px) scale(1.03);
+        background-color: #fa807259;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+        border-left-color: #6498ff;
+      }
+
+      /* Network Diagram Styling */
+      .network-diagram {
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-start;
+        width: 100%;
+        margin-top: 2rem;
+      }
+      .network-component {
+        background-color: rgba(10, 25, 47, 0.8);
+        border: 2px solid #64ffda;
+        border-radius: 8px;
+        padding: 1.5rem;
+        width: 30%;
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+      .network-component:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 0 25px rgba(100, 255, 218, 0.6);
+        background-color: rgba(32, 76, 142, 0.9);
+      }
+      .network-arrow {
+        font-size: 3rem;
+        color: #64ffda;
+        align-self: center;
+        padding: 0 1rem;
+      }
+
+      .static-figure-container {
+        margin-top: 20px;
+        display: flex;
+        /* Added to center the image */
+        justify-content: center;
+        /* Added to center the image */
+      }
+
+      .static-figure-container img {
+        max-height: 500px;
+        /* Ensure figure does not get too tall */
+        border: 2px solid rgba(62, 147, 251, 0.896);
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(100, 255, 218, 0.3);
+      }
+
+      /* Two Column Layout for Static Slide */
+      .two-column-layout {
+        display: flex;
+        flex-direction: row;
+        gap: 40px;
+        width: 100%;
+        align-items: flex-start;
+        /* Align items to the top of the container */
+        margin-top: 20px;
+      }
+
+      .column-left {
+        flex-basis: 45%;
+      }
+
+      .column-right {
+        flex-basis: 55%;
+        text-align: left;
+      }
+
+      .column-right p {
+        font-size: 0.9em;
+        line-height: 1.6;
+      }
+
+      .spectrum-line {
+        height: 80px;
+        background: linear-gradient(
+          90deg,
+          rgba(148, 0, 211, 0.7) 0%,
+          rgba(75, 0, 130, 0.7) 16%,
+          rgba(0, 0, 255, 0.7) 33%,
+          rgba(0, 255, 0, 0.7) 50%,
+          rgba(255, 255, 0, 0.7) 66%,
+          rgba(255, 165, 0, 0.7) 83%,
+          rgba(255, 0, 0, 0.7) 100%
+        );
+        border-radius: 2px;
+      }
+
+      .channel-label {
+        position: absolute;
+        font-size: 14px;
+        color: white;
+        text-align: center;
+      }
+
+      .icon-container {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin-top: -30px;
+        margin-left: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .container {
+        display: flex;
+        /* Enable flexbox */
+        justify-content: space-between;
+        /* Space items evenly horizontally */
+        align-items: center;
+        /* Center items vertically */
+        min-height: 10vh;
+        border: 2px;
+        /* Visualize container boundary */
+        padding: 20px;
+        /* Inner padding */
+      }
+
+      .advantage-item {
+        transition: all 0.3s ease;
+        margin-left: 20px;
+        padding-left: 1rem;
+      }
+
+      .advantage-item:hover {
+        transform: translateY(-5px);
+        border: 3px solid #ffd9009f;
+        background-color: rgba(131, 157, 228, 0.739);
+        border-radius: 12px;
+      }
+
+      .detector-diagram {
+        position: relative;
+        height: 50px;
+        width: 100%;
+        margin: 10px 0;
+      }
+
+      .detector-stage {
+        position: absolute;
+        height: 40px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+      }
+
+      .arrow {
+        position: absolute;
+        height: 2px;
+        background-color: rgba(255, 215, 0, 0.7);
+      }
+
+      .arrow:after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: -4px;
+        border-style: solid;
+        border-width: 5px 0 5px 8px;
+        transition: transform 0.3s ease;
+        border-color: transparent transparent transparent rgba(255, 215, 0, 0.7);
+      }
+
+      .process-step {
+        position: relative;
+        padding-left: 5rem;
+      }
+
+      .process-step:before {
+        content: "";
+        position: absolute;
+        left: 10px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: rgba(255, 215, 0, 0.5);
+      }
+
+      .process-step:last-child:before {
+        height: 50%;
+      }
+
+      .process-step:after {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 10px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #ffd700;
+      }
+
+      .image-processing {
+        height: 80px;
+        position: relative;
+
+        border-radius: 4px;
+      }
+
+      .original-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          rgba(50, 50, 80, 0.8) 0%,
+          rgba(100, 100, 150, 0.6) 50%,
+          rgba(50, 50, 80, 0.8) 100%
+        );
+      }
+
+      .processed-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          rgba(30, 30, 60, 0.9) 0%,
+          rgba(255, 215, 0, 0.7) 50%,
+          rgba(30, 30, 60, 0.9) 100%
+        );
+        clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+      }
+
+      .divider {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 2px;
+        height: 100%;
+        background-color: white;
+      }
+
+      .arrow-divider {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 20px;
+        height: 20px;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+      }
+
+      .figure-with-caption {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .one-column-layout-fade {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .one-column-layout-fade p {
+        transition: opacity 1s ease-in-out;
+      }
+
+      /* Style for the fade-in/out image container */
+      .two-column-layout-fade {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        width: 100%;
+        padding: 0 20px;
+      }
+
+      .two-column-layout-fade p {
+        transition: opacity 0.1s ease-in-out;
+      }
+
+      .three-column-layout-fade {
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-start;
+        gap: 20px;
+        width: 100%;
+      }
+
+      .three-column-layout-fade p {
+        transition: opacity 0.1s ease-in-out;
+      }
+
+      /* Style for the fade-in/out image container */
+      .image-placeholder-1 {
+        position: relative;
+        width: 600px; /* Adjust size as needed */
+        height: 600px; /* Adjust size as needed */
+        margin: 20px auto;
+      }
+      .image-placeholder-1 img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 5px;
+        border: 2px solid rgba(100, 255, 218, 0.5);
+      }
+
+      .image-placeholder-2 {
+        position: relative;
+        width: 600px;
+        height: 600px;
+      }
+      .image-placeholder-2 img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 5px;
+        border: 2px solid rgba(100, 255, 218, 0.5);
+      }
+
+      .image-placeholder-3 {
+        position: relative;
+        width: 450px; /* Adjust width as needed */
+        height: 450px; /* Adjust height as needed */
+      }
+
+      .image-placeholder-3 img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 5px;
+        border: 2px solid rgba(100, 255, 218, 0.5);
+        /* Opacity is controlled by inline styles for animation */
+      }
+
+      /* Styles for the IoU slide */
+      .iou-container {
+        display: flex;
+        gap: 40px;
+        align-items: flex-start;
+        width: 100%;
+      }
+
+      .iou-explanation {
+        flex: 1;
+        text-align: left;
+      }
+      .iou-visualization {
+        flex: 1;
+        position: relative;
+        height: 280px; /* Adjust as needed */
+        margin-top: 20px;
+      }
+      .iou-box {
+        position: absolute;
+        border-radius: 8px;
+      }
+      .ground-truth-box {
+        border: 3px solid #64ffda; /* Teal */
+        width: 100px;
+        height: 100px;
+        top: 20px;
+        left: 50px;
+      }
+
+      .ground-truth-box2 {
+        border: 3px solid #64ffda; /* Teal */
+        background-color: #64ffda;
+        width: 100px;
+        height: 100px;
+        top: 170px;
+        left: 50px;
+      }
+      .prediction-box {
+        border: 3px dashed #64ffda; /* Yellow */
+        width: 100px;
+        height: 100px;
+        top: 40px;
+        left: 70px;
+      }
+
+      .prediction-box2 {
+        border: 3px dashed #64ffda;
+        background-color: #64ffda; /* Yellow */
+        width: 100px;
+        height: 100px;
+        top: 190px;
+        left: 70px;
+      }
+
+      .intersection-area {
+        position: absolute;
+        background-color: #64ffda;
+        top: 40px;
+        left: 70px;
+        width: 80px;
+        height: 80px;
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-top: 20px;
+      }
+
+      /* --- Image Click to Enlarge Effect --- */
+
+      /* Add pointer style to magnifiable images */
+      .reveal .slides img.magnifiable,
+      .reveal .slides .magnifiable-container {
+        cursor: zoom-in;
+      }
+
+      /* Magnified image container/overlay */
+      .magnify-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+        z-index: 99;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: zoom-out;
+        /* Fade-in animation */
+        animation: fadeIn 0.3s ease-in-out;
+      }
+
+      /* Magnified image style */
+      .magnify-overlay img {
+        height: 900px; /* Target height */
+        width: auto;
+        max-width: 95vw; /* Prevent overflow width */
+        max-height: 95vh; /* Prevent overflow height */
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        object-fit: contain;
+        cursor: default; /* Restore default cursor for magnified image */
+      }
+
+            .credits-content h3 {
+        font-size: 2.2em;
+        color: #facc15; /* yellow-300 */
+        margin-top: 60px;
+        margin-bottom: 15px;
+      }
+
+      .credits-content p {
+        font-size: 1.6em;
+        line-height: 1.6;
+        margin-bottom: 2px;
+      }
+
+      .credits-content .role {
+        color: #9ca3af; /* gray-400 */
+        font-size: 1.0em;
+        margin-bottom: 25px;
+      }
+      .credits-content .funding-item {
+        font-size: 1.2em;
+        padding: 0 10%;
+        margin-bottom: 15px;
+        line-height: 1.5;
+        text-align: center;
+      }
+
+      /* --- Credits Roll Specific Styling --- */
+      .credits-roll-container {
+        position: relative;
+        width: 100%;
+        height: 800px; /* Defines the scrolling area height */
+        overflow: hidden;
+      }
+
+      .credits-content {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        animation: scroll-up 35s;
+        /* The animation is now applied via Javascript */
+      }
+      
+      @keyframes scroll-up-in-slide {
+          from {
+              top: 100%;
+          }
+          to {
+              top: -380%; /* Adjusted to ensure all content scrolls off screen */
+          }
+      }
+
+      /* Fade-in animation keyframes */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Gemini API Feature Styling */
+      .gemini-button {
+        background-color: #64ffda;
+        color: #0a192f;
+        border: none;
+        padding: 8px 16px;
+        font-family: "Exo 2", "MyCustomChineseFont", "Noto Sans SC",
+          "Microsoft YaHei", "PingFang SC", sans-serif;
+        font-size: 0.7em;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        margin-top: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .gemini-button:hover {
+        background-color: #8affea;
+        transform: translateY(-2px);
+      }
+
+      .gemini-button:active {
+        transform: translateY(0px);
+      }
+
+      #gemini-response-container {
+        margin-top: 10px;
+        padding: 12px;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 5px;
+        min-height: 40px;
+        width: 80%;
+        max-width: 700px;
+        font-size: 0.7em;
+        color: #e6f1ff;
+        border: 1px solid rgba(100, 255, 218, 0.2);
+        text-align: left;
+        line-height: 1.5;
+      }
+
+      #gemini-response-container.loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #64ffda;
+      }
+
+      .spinner {
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border-left-color: #64ffda;
+        animation: spin 1s ease infinite;
+        margin-right: 8px;
+      }
+
+      /* YOLO Easter Egg Styling */
+      .yolo-box {
+        position: absolute;
+        border: 1px solid #64ffda; /* Teal color from reference */
+        box-sizing: border-box;
+        opacity: 0;
+        transition: opacity 0.4s ease-in-out;
+        pointer-events: none; /* Make boxes unclickable */
+      }
+      .yolo-label {
+        position: absolute;
+        top: -18px; /* Position label above the box */
+        left: -1px;
+        background-color: #64ffda;
+        color: #0a192f;
+        padding: 1px 4px;
+        font-size: 10px;
+        font-weight: bold;
+        font-family: monospace;
+        white-space: nowrap;
+        border-radius: 2px;
+      }
+
+      /* Countdown Timer Styling */
+      #yolo-countdown {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 250px;
+        font-weight: bold;
+        color: #facc15;
+        text-shadow: 0 0 30px #facc15, 0 0 50px #facc15;
+        z-index: 100;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+        pointer-events: none;
+      }
+      
+      /* --- FIX for controls --- */
+      .reveal .controls {
+          z-index: 101 !important;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Starry background div for ALL slides -->
+    <div id="star-bg"></div>
+
+    <!-- Reveal.js slides -->
+    <div class="reveal">
+      <div class="slides">
+        <!-- New First Slide from page_1.html -->
+        <section data-transition="zoom">
+          <!-- Main Content for the new first slide -->
+          <div style="position: relative; z-index: 1">
+            <div class="w-full text-center mb-8">
+              <h1>Application and Innovation of the YOLO Model in Astronomical Spectral Data</h1>
+              <h3>Object Detection and Classification Based on CSST Slitless Spectroscopic Data</h3>
+            </div>
+            <br />
+            <div class="flex justify-center items-center space-x-16 my-8">
+              <div class="text-center">
+                <div class="text-yellow-300 text-4xl mb-3">
+                  <i class="fas fa-satellite"></i>
+                </div>
+                <p class="text-3xl text-gray-300">CSST Slitless Spectra Analysis</p>
+              </div>
+              <div class="text-center">
+                <div class="text-yellow-300 text-4xl mb-3">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <p class="text-3xl text-gray-300">Deep Learning Detection Framework</p>
+              </div>
+              <div class="text-center">
+                <div class="text-yellow-300 text-4xl mb-3">
+                  <i class="fas fa-star"></i>
+                </div>
+                <p class="text-3xl text-gray-300">Precise Celestial Object Classification</p>
+              </div>
+            </div>
+            <br />
+            <div class="w-full text-center mt-12">
+              <p class="text-3xl text-gray-300 mb-2">Yingying Zhou</p>
+              <p class="text-2xl text-gray-300 mb-2">
+                Collaborators: Chao Liu, Hao Tian, Xin Zhang, Nan Li
+              </p>
+
+              <p class="text-xl text-gray-400">National Astronomical Observatories, Chinese Academy of Sciences</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="mb-6 text-center">
+            <h2>Introduction to CSST Slitless Spectroscopic Data</h2>
+          </div>
+          <div class="grid grid-cols-2 grid-rows-2 flex">
+            <div class="h-1/2 pr-4">
+              <div class="item-card2 p-6 mb-6">
+                <h3 class="text-xl font-semibold text-yellow-300 mb-3">
+                  <i class="fas fa-rainbow mr-2"></i>Observation Bands
+                </h3>
+                <p class="text-blue-200 mb-4 text-l">
+                  CSST slitless spectroscopy covers a broad band from near-ultraviolet to near-infrared (255-1000nm)
+                </p>
+                <div class="relative h-20 mb-3">
+                  <div
+                    class="spectrum-line absolute top-0 left-0 right-0"
+                  ></div>
+                  <div class="absolute top-0 left-0 w-full">
+                    <div
+                      style="position: absolute; left: 0%; width: 25%; top: 0px"
+                    >
+                      <div
+                        class="h-8 border-l border-r border-white border-opacity-30"
+                      ></div>
+                      <div class="channel-label">GU Channel<br />(255–420 nm)</div>
+                    </div>
+                    <div
+                      style="
+                        position: absolute;
+                        left: 25%;
+                        width: 30%;
+                        top: 0px;
+                      "
+                    >
+                      <div
+                        class="h-8 border-l border-r border-white border-opacity-30"
+                      ></div>
+                      <div class="channel-label">GV Channel<br />(400–650 nm)</div>
+                    </div>
+                    <div
+                      style="
+                        position: absolute;
+                        left: 55%;
+                        width: 45%;
+                        top: 0px;
+                      "
+                    >
+                      <div
+                        class="h-8 border-l border-r border-white border-opacity-30"
+                      ></div>
+                      <div class="channel-label">GI Channel<br />(620–1000 nm)</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="item-card2 p-6 mb-6">
+                <h3 class="text-xl font-semibold text-green-400 mb-3">
+                  <i class="fas fa-database mr-2"></i>Data Scale
+                </h3>
+                <div style="margin-top: 50px"></div>
+                <ul class="text-white space-y-2 text-3xl text-center">
+                  <li class="flex items-center justify-center">
+                    <i class="fas fa-chart-area text-purple-300 mt-1 mr-3"></i
+                    ><span
+                      >Covers ~<span class="text-yellow-300 font-bold"
+                        >17,500</span
+                      > sq. degree survey</span
+                    >
+                  </li>
+                  <li class="flex items-center justify-center">
+                    <i class="fas fa-search-plus text-purple-300 mt-1 mr-3"></i
+                    ><span
+                      ><span class="text-yellow-300 font-bold">400</span
+                      > sq. degree ultra-deep field observation</span
+                    >
+                  </li>
+
+                  <li class="flex items-center justify-center">
+                    <i class="fas fa-hdd text-purple-300 mt-1 mr-3"></i
+                    ><span
+                      >Expected to generate <span class="text-yellow-300 font-bold">Petabytes</span> of data</span
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="h-1/2 pl-4">
+              <div class="item-card2 p-6 mb-6">
+                <h3 class="text-xl font-semibold text-purple-400 mb-3">
+                  <i class="fas fa-microscope mr-2"></i>Resolution
+                </h3>
+                <div class="flex justify-between">
+                  <div
+                    class="flex flex-col items-center bg-blue-900 bg-opacity-40 p-4 rounded-lg w-5/12"
+                  >
+                    <i
+                      class="fas fa-grip-lines text-2xl text-blue-300 mb-2"
+                    ></i>
+                    <div class="text-center">
+                      <p class="text-white font-bold">Spectral Resolution</p>
+                      <p class="text-yellow-300 text-2xl">R ≲ 200</p>
+                      <p class="text-blue-200 text-2xl">Low-Resolution Spectra</p>
+                    </div>
+                  </div>
+                  <div
+                    class="flex flex-col items-center bg-blue-900 bg-opacity-40 p-4 rounded-lg w-5/12"
+                  >
+                    <i
+                      class="fas fa-drafting-compass text-2xl text-blue-300 mb-2"
+                    ></i>
+                    <div class="text-center">
+                      <p class="text-white font-bold">Spatial Resolution</p>
+                      <p class="text-yellow-300 text-2xl">&lt; 0.15 arcsec</p>
+                      <p class="text-blue-200 text-2xl">Comparable to Hubble</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="item-card2 p-6">
+                <h3 class="text-xl font-semibold text-blue-400 mb-3">
+                  <i class="fas fa-flask mr-2 text-2xl"></i>Scientific Value
+                </h3>
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="bg-blue-900 bg-opacity-30 p-3 rounded-lg">
+                    <div class="flex items-center mb-2">
+                      <i class="fas fa-globe-americas text-yellow-300 mr-2"></i>
+                      <p class="text-white font-medium">Cosmology</p>
+                    </div>
+                  </div>
+                  <div class="bg-blue-900 bg-opacity-30 p-3 rounded-lg">
+                    <div class="flex items-center mb-2">
+                      <i class="fas fa-circle-notch text-yellow-300 mr-2"></i>
+                      <p class="text-white font-medium">Galaxy Evolution</p>
+                    </div>
+                  </div>
+
+                  <div class="bg-blue-900 bg-opacity-30 p-3 rounded-lg">
+                    <div class="flex items-center mb-2">
+                      <i class="fas fa-moon text-yellow-300 mr-2"></i>
+                      <p class="text-white font-medium">Dark Matter</p>
+                    </div>
+                  </div>
+                  <div class="bg-blue-900 bg-opacity-30 p-3 rounded-lg">
+                    <div class="flex items-center mb-2">
+                      <i class="fas fa-star text-yellow-300 mr-2"></i>
+                      <p class="text-white font-medium">Stellar Physics</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="mb-8">
+            <h2>Challenges in Slitless Spectroscopic Data Analysis</h2>
+          </div>
+          <div class="text-blue-200 mb-6 text-2xl">
+            <p>
+              Traditional spectral data processing methods face multiple challenges when dealing with large-scale slitless spectroscopic surveys like CSST, affecting the efficiency and accuracy of data analysis.
+            </p>
+          </div>
+          <div class="flex-grow grid grid-cols-3 gap-6">
+            <div
+              class="item-card border-red-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div
+                class="icon-container bg-gradient-to-br from-red-500 to-red-700"
+              >
+                <i class="fas fa-layer-group text-2xl text-white"></i>
+              </div>
+              <p
+                class="text-5xl font-semibold text-red-400 mb-3 from-red-500 to-red-700"
+              >
+                Spectral Overlap
+              </p>
+              <p class="text-white text-2xl">
+                In crowded fields, spectra from different celestial objects can easily overlap, increasing the difficulty of target identification and spectral extraction.
+              </p>
+            </div>
+            <div
+              class="item-card border-yellow-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div
+                class="icon-container bg-gradient-to-br from-yellow-500 to-yellow-700"
+              >
+                <i class="fas fa-question-circle text-2xl text-white"></i>
+              </div>
+              <p class="text-5xl font-semibold text-yellow-400 mt-4 mb-3">
+                Spatial Uncertainty
+              </p>
+              <p class="text-white text-2xl">
+                Accurately determining the celestial position corresponding to a spectral signal is a key challenge, especially for faint objects.
+              </p>
+            </div>
+            <div
+              class="item-card border-purple-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div
+                class="icon-container bg-gradient-to-br from-purple-500 to-purple-700"
+              >
+                <i class="fas fa-database text-2xl text-white"></i>
+              </div>
+              <p class="text-5xl font-semibold text-purple-400 mt-4 mb-3">
+                Massive Data Processing
+              </p>
+              <p class="text-white text-2xl">
+                CSST will generate petabytes of data. Traditional methods are slow and cannot meet the demands of large-scale data analysis.
+              </p>
+            </div>
+            <div
+              class="item-card border-blue-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div
+                class="icon-container bg-gradient-to-br from-blue-500 to-blue-700"
+              >
+                <i class="fas fa-filter text-2xl text-white"></i>
+              </div>
+              <p class="text-5xl font-semibold text-blue-400 mt-4 mb-3">
+                Background Subtraction
+              </p>
+              <p class="text-white text-2xl">
+                Complex spatial backgrounds, especially diffuse light and zodiacal light, pose a challenge for the precise measurement of faint object spectra. The difficulty of accurate background estimation and subtraction directly affects the signal-to-noise ratio of spectral measurements.
+              </p>
+            </div>
+            <div
+              class="item-card border-green-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div
+                class="icon-container bg-gradient-to-br from-green-500 to-green-700"
+              >
+                <i class="fas fa-chart-line text-2xl text-white"></i>
+              </div>
+              <p class="text-5xl font-semibold text-green-400 mt-4 mb-3">
+                Error Accumulation
+              </p>
+              <p class="text-white text-2xl">
+                The multi-step process of traditional methods (source detection, cross-matching, spectral extraction, background subtraction, etc.) can lead to the accumulation and propagation of errors at each stage, especially when processing faint targets, affecting the reliability of the final analysis results.
+              </p>
+            </div>
+            <div
+              class="item-card border-pink-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div
+                class="icon-container bg-gradient-to-br from-pink-500 to-pink-700"
+              >
+                <i class="fas fa-tags text-2xl text-white"></i>
+              </div>
+              <p class="text-5xl font-semibold text-pink-400 mt-4 mb-3">
+                Rapid Classification & Parameter Estimation
+              </p>
+              <p class="text-white text-2xl">
+                Facing massive spectra requires efficient algorithms for celestial object classification (e.g., stars, galaxies, quasars) and rapid estimation of key physical parameters (e.g., redshift). Traditional methods have shortcomings in processing speed and automation.
+              </p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h2>Motivation</h2>
+          <div style="margin-top: 50px"></div>
+          <p>CSST's juxtaposed focal plane design leads to missing direct imaging positions for slitless spectra, making spectral extraction difficult.</p>
+        </section>
+
+        <section>
+          <h2>Solution</h2>
+          <div style="margin-top: 50px"></div>
+          <p>Machine Learning Approach: Use object detection to determine the position of spectral traces.</p>
+        </section>
+
+        <section>
+          <div class="mb-8 text-center">
+            <h2>Differences Between CSST Slitless Spectra and Conventional Object Detection Tasks</h2>
+          </div>
+          <div class="flex-grow grid grid-cols-2 gap-6">
+            <div
+              class="item-card border-red-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center">
+                  <div
+                    class="icon-container bg-gradient-to-br from-yellow-500 to-yellow-700"
+                  >
+                    <i class="fas fa-search-plus text-2xl text-white"></i>
+                  </div>
+                  <p class="text-4xl font-semibold text-yellow-300">
+                    Small Object Challenge
+                  </p>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="small-target"></div>
+                  <div class="text-lg text-gray-400">8×8 pixels</div>
+                </div>
+              </div>
+              <ul class="space-y-1 text-gray-300">
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    Zero-order spectral images (Class B) are only ~8×8 pixels in size, embedded in ultra-high-resolution images of 9216×9232 pixels.
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    High-resolution data puts pressure on memory and processing power, while small objects are easily obscured by noise or background variations.
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    Simple image segmentation strategies may conflict with the detection needs for high aspect ratio targets.
+                  </p>
+                </li>
+              </ul>
+            </div>
+            <div
+              class="item-card border-red-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center">
+                  <div
+                    class="icon-container bg-gradient-to-br from-blue-500 to-blue-700"
+                  >
+                    <i class="fas fa-ruler-horizontal text-2xl text-white"></i>
+                  </div>
+                  <p class="text-4xl font-semibold text-blue-300">
+                    High Aspect Ratio Challenge
+                  </p>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="large-aspect"></div>
+                  <div class="text-lg text-gray-400">1:30 ratio</div>
+                </div>
+              </div>
+              <ul class="space-y-1 text-gray-300">
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    Non-zero-order spectral traces (Class A) have an elongated shape, with a width of ~300-400 pixels and a height of only ~8 pixels, an extreme aspect ratio (>30:1) that conventional object detection methods struggle to adapt to.
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    Slicing the original image into smaller patches will truncate the spectral traces along the dispersion axis.
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    Truncation introduces edge artifacts, misalignments, and other issues, destroying spectral continuity and affecting parameter extraction.
+                  </p>
+                </li>
+              </ul>
+            </div>
+            <div
+              class="item-card border-red-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center">
+                  <div
+                    class="icon-container bg-gradient-to-br from-red-500 to-red-700"
+                  >
+                    <i class="fas fa-info text-2xl text-white"></i>
+                  </div>
+                  <p class="text-4xl font-semibold text-red-300">
+                    Information Asymmetry Challenge
+                  </p>
+                  <p></p>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                  <div class="info-asymmetry">
+                    <div class="wavelength"></div>
+                    <div class="spatial"></div>
+                  </div>
+                  <div class="text-lg text-gray-400">Wavelength vs. Spatial</div>
+                </div>
+              </div>
+              <ul class="space-y-1 text-gray-300">
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    In slitless spectral images, the information content is unbalanced between the wavelength and spatial directions.
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    The wavelength direction contains rich information: absorption/emission lines, continuum shape, temperature, metallicity, etc.
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    The spatial direction mainly shows the star's position and the telescope's Point Spread Function (PSF) effect.
+                  </p>
+                </li>
+              </ul>
+            </div>
+            <div
+              class="item-card border-red-400 rounded-lg shadow-lg pt-6 pb-4 px-5 relative"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center">
+                  <div
+                    class="icon-container bg-gradient-to-br from-purple-500 to-purple-700"
+                  >
+                    <i class="fas fa-dot-circle text-2xl text-white"></i>
+                  </div>
+                  <p class="text-4xl font-semibold text-purple-300">
+                    Complex Background Challenge
+                  </p>
+                </div>
+                <div
+                  class="w-24 h-16 bg-black rounded-md relative overflow-hidden"
+                  id="background-viz"
+                >
+                  <div
+                    class="absolute w-full h-full opacity-30"
+                    id="noise-pattern"
+                  ></div>
+                  <div
+                    class="absolute top-6 left-10 w-4 h-4 bg-yellow-300 rounded-full opacity-60"
+                  ></div>
+                </div>
+              </div>
+              <ul class="space-y-1 text-gray-300">
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    To avoid excessive overlap from dense targets, all spectral orders of faint stars (m>22) are designated as background.
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    The background shares morphological and spectral features with the target signals, increasing detection difficulty.
+                  </p>
+                </li>
+                <li class="flex items-start">
+                  <p class="text-white text-2xl">
+                    Unlike common targets, the edges of spectra are blurry and sparse.
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+        <!-- slide  YOLO Model Selection -->
+        <section>
+          <h2 class="text-4xl font-bold mb-0 text-white">Model Selection</h2>
+          <div class="mb-8 text-center">
+            <!-- Main content -->
+            <div class="flex gap-4">
+              <!-- Left container -->
+              <div class="flex flex-col w-1/2 gap-4">
+                <div class="flex items-center mb-4">
+                  <i class="fas fa-code-branch text-3xl mr-3"></i>
+                  <p class="text-3xl font-semibold">Evolution of Object Detection Models</p>
+                </div>
+                <!-- Two Stage Detector -->
+                <div class="item-card p-4 mb-4 flex-1 text-left">
+                  <p class="text-3xl text-purple-300 mb-2 flex items-center">
+                    <i class="fas fa-project-diagram mr-2"></i>
+                    Two-Stage Detectors (R-CNN Series)
+                  </p>
+                  <div class="detector-diagram">
+                    <div
+                      class="detector-stage"
+                      style="
+                        left: 0;
+                        top: 0;
+                        width: 100px;
+                        background-color: rgba(17, 128, 193, 0.3);
+                      "
+                    >
+                      <p class="text-2xl font-semibold">Input Image</p>
+                    </div>
+                    <div
+                      class="arrow"
+                      style="left: 95px; top: 20px; width: 40px"
+                    ></div>
+                    <div
+                      class="detector-stage"
+                      style="
+                        left: 140px;
+                        top: 0;
+                        width: 100px;
+                        background-color: rgba(17, 128, 193, 0.3);
+                      "
+                    >
+                      <p class="text-2xl font-semibold">Proposal Network</p>
+                    </div>
+                    <div
+                      class="arrow"
+                      style="left: 245px; top: 20px; width: 40px"
+                    ></div>
+                    <div
+                      class="detector-stage"
+                      style="
+                        left: 290px;
+                        top: 0;
+                        width: 130px;
+                        background-color: rgba(17, 128, 193, 0.3);
+                      "
+                    >
+                      <p class="text-2xl font-semibold">Classify & Refine</p>
+                    </div>
+                  </div>
+                  <ul class="space-y2 text-gray-300 text-left text-xl">
+                    <li>
+                      <i class="fas fa-check-circle text-blue-400 mr-2"></i
+                      >R-CNN series (2014-2017) uses hierarchical processing
+                    </li>
+                    <li>
+                      <i class="fas fa-check-circle text-blue-400 mr-2"></i
+                      >First identifies potential regions, then refines classification and adjustment
+                    </li>
+                    <li>
+                      <i class="fas fa-plus-circle text-green-400 mr-2"></i
+                      >Advantage: High accuracy, especially for complex scenes
+                    </li>
+                    <li>
+                      <i class="fas fa-minus-circle text-red-400 mr-2"></i
+                      >Disadvantage: High computational complexity, difficult to process ultra-high-resolution data
+                    </li>
+                  </ul>
+                </div>
+                <div class="item-card2 p-4 mb-4 flex-1 text-left">
+                  <p class="text-3xl text-green-300 mb-2 flex items-center">
+                    <i class="fas fa-bolt mr-2"></i>
+                    One-Stage Detectors (YOLO Series)
+                  </p>
+                  <div class="detector-diagram">
+                    <div
+                      class="detector-stage"
+                      style="
+                        left: 0;
+                        top: 0;
+                        width: 100px;
+                        background-color: rgba(228, 160, 160, 0.3);
+                      "
+                    >
+                      <p class="text-2xl font-semibold">Input Image</p>
+                    </div>
+                    <div
+                      class="arrow"
+                      style="left: 95px; top: 20px; width: 40px"
+                    ></div>
+                    <div
+                      class="detector-stage"
+                      style="
+                        left: 140px;
+                        top: 0;
+                        width: 250px;
+                        background-color: rgba(228, 160, 160, 0.3);
+                      "
+                    >
+                      <p class="text-2xl font-semibold">Single-pass Bbox & Class Prediction</p>
+                    </div>
+                  </div>
+                  <ul class="space-y2 text-gray-300 text-left text-xl">
+                    <li>
+                      <i class="fas fa-check-circle text-blue-400 mr-2"></i
+                      >YOLO, SSD, etc., predict directly from an anchor grid
+                    </li>
+                    <li>
+                      <i class="fas fa-check-circle text-blue-400 mr-2"></i
+                      >Simplifies the detection process, eliminating the proposal step
+                    </li>
+                    <li>
+                      <i class="fas fa-plus-circle text-green-400 mr-2"></i
+                      >Advantage: Fast speed, high efficiency, supports real-time processing
+                    </li>
+                    <li>
+                      <i class="fas fa-minus-circle text-red-400 mr-2"></i
+                      >Disadvantage: Accuracy may be slightly lower in crowded scenes
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Right container -->
+              <div class="w-1/2 p-4 text-left">
+                <div class="flex items-center mb-4">
+                  <i class="fas fa-star text-green-300 text-2xl mr-3"></i>
+                  <p class="text-4xl flex items-center font-semibold">
+                    YOLO's Unique Advantages in Astronomical Data Processing
+                  </p>
+                </div>
+
+                <div
+                  class="grid grid-cols-2 gap-x-15 gap-y-10 items-center mr-0 ml-auto"
+                >
+                  <div class="advantage-item flex items-center">
+                    <div class="rounded-full p-2 mr-2">
+                      <i class="fas fa-expand-arrows-alt text-blue-300"></i>
+                    </div>
+                    <div>
+                      <p class="text-white text-2xl">Handles Full High-Res Images</p>
+                      <p class="text-gray-300 text-base">
+                        No slicing, preserving spectral trace integrity
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="advantage-item flex items-start">
+                    <div class="rounded-full p-2 mr-2">
+                      <i class="fas fa-search-minus text-blue-300"></i>
+                    </div>
+                    <div>
+                      <p class="text-white text-2xl">Small Object Detection Capability</p>
+                      <p class="text-gray-300 text-base">
+                        Optimized anchor framework suits zero-order spectra
+                      </p>
+                    </div>
+                  </div>
+                  <div class="advantage-item flex items-start">
+                    <div class="rounded-full p-2 mr-2">
+                      <i class="fas fa-microchip text-blue-300"></i>
+                    </div>
+                    <div>
+                      <p class="text-white text-2xl">Efficient Resource Utilization</p>
+                      <p class="text-gray-300 text-base">
+                        Avoids memory bottlenecks of two-stage models
+                      </p>
+                    </div>
+                  </div>
+                  <div class="advantage-item flex items-start">
+                    <div class="rounded-full p-2 mr-2">
+                      <i class="fas fa-puzzle-piece text-blue-300"></i>
+                    </div>
+                    <div>
+                      <p class="text-white text-2xl">Modularity & Scalability</p>
+                      <p class="text-gray-300 text-base">
+                        Supports future direct extraction of astrophysical parameters
+                      </p>
+                    </div>
+                  </div>
+                  <div class="advantage-item flex items-start">
+                    <div class="rounded-full p-2 mr-2">
+                      <i class="fas fa-tachometer-alt text-blue-300"></i>
+                    </div>
+                    <div>
+                      <p class="text-white text-2xl">Model Choice Flexibility</p>
+                      <p class="text-gray-300 text-base">
+                        YOLOv5 for speed, YOLOv11 for accuracy
+                      </p>
+                    </div>
+                  </div>
+                  <div class="advantage-item flex items-start">
+                    <div class="rounded-full p-2 mr-2">
+                      <i class="fas fa-users text-blue-300"></i>
+                    </div>
+                    <div>
+                      <p class="text-white text-2xl">Community Support & Optimization</p>
+                      <p class="text-gray-300 text-sm">
+                        Active development community ensures continuous model improvement
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <br />
+                <div class="mt-auto pt-4 border-t border-gray-600">
+                  <div class="flex items-center">
+                    <i
+                      class="fas fa-lightbulb text-yellow-300 text-2xl mr-3"
+                    ></i>
+                    <p class="text-xl text-gray-200">
+                      Although two-stage models have higher accuracy, YOLO's efficient processing of complete spectra and hardware compatibility make it the ideal choice for CSST slitless spectral analysis.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section>
+          <div class="w-full text-center mb-6">
+            <h2 class="text-4xl font-bold mb-2 text-white">
+              Dataset Design and Preprocessing
+            </h2>
+          </div>
+          <!-- Main content -->
+          <div class="flex flex-col space-y-6">
+            <!-- Datasets Section -->
+            <div class="flex space-x-6">
+              <!-- Simulation A -->
+              <div class="w-1/2 item-card p-4">
+                <div class="flex items-center mb-3">
+                  <i class="fas fa-database text-blue-300 text-2xl mr-3"></i>
+                  <p class="text-2xl font-semibold">Simulation A: Stellar Fields of Different Densities</p>
+                </div>
+                <ul class="space-y-2">
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl">Focuses on stellar samples from different regions of the Milky Way</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl"
+                      >Representative regions: Galactic longitude l=90°, latitude b=10° and b=20°</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl">Uses the Galaxia model to generate stellar distributions</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl"
+                      >Uses an early CSST instrument model, without instrumental or sky background</span
+                    >
+                  </li>
+                </ul>
+              </div>
+              <!-- Simulation B -->
+              <div class="w-1/2 item-card2 p-4">
+                <div class="flex items-center mb-3">
+                  <i class="fas fa-database text-blue-300 text-2xl mr-3"></i>
+                  <p class="text-2xl font-semibold">Simulation B: Mix of Three Object Types</p>
+                </div>
+                <ul class="space-y-2">
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl">Includes three types of objects: stars, galaxies, and quasars</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl"
+                      >Observation region: RA ~170°, Dec ~-23.5°</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl"
+                      >Includes full instrument effects, some already corrected by the CSST data processing pipeline</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <i
+                      class="fas fa-star-of-life text-blue-300 text-sm mt-1.5 mr-2"
+                    ></i>
+                    <span class="text-2xl"
+                      >Updated PSF model, with a narrower spatial profile (FWHM ~2-4 pixels)</span
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <!-- Preprocessing Section -->
+            <div class="flex gap-4">
+              <div class="item-card w-1/2">
+                <div class="flex items-center mb-3">
+                  <i class="fas fa-cogs text-blue-300 text-2xl mr-3"></i>
+                  <p class="text-2xl font-semibold">Data Preprocessing Pipeline</p>
+                </div>
+                <div class="flex">
+                  <!-- Steps Description -->
+                  <div class="pr-4">
+                    <div class="space-y-6">
+                      <!-- Step 1: Image Enhancement -->
+                      <div class="process-step pb-4">
+                        <p class="text-2xl text-yellow-300 mb-2">
+                          Image Contrast Enhancement
+                        </p>
+                        <p class="text-xl">
+                          Readjust pixel value distribution using the ZScale algorithm.
+                        </p>
+                      </div>
+                      <!-- Step 2: Image Resizing -->
+                      <div class="process-step pb-4">
+                        <p class="text-2xl text-yellow-300 mb-2">
+                          Image Resizing
+                        </p>
+                        <p class="text-xl">
+                          To avoid truncating spectral images, only split horizontally, then stretch to a square.
+                        </p>
+                      </div>
+                      <!-- Step 3: Brightness Thresholding -->
+                      <div class="process-step pb-4">
+                        <p class="text-2xl text-yellow-300 mb-2">Labeling Bounding Boxes</p>
+                        <p class="text-xl">
+                          Considering source density and signal-to-noise ratio, only brighter sources are labeled.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex-grow w-2/3 h-full">
+                <div class="container" style="height: 60vh; margin-left: 40px">
+                  <div style="align-items: center">
+                    <div class="w-full">
+                      <i
+                        class="fas fa-crop-alt text-blue-300 text-5xl mb-1"
+                      ></i>
+                      <p class="text-2xl">Each original image<br />split into 10 sub-images</p>
+                    </div>
+                  </div>
+                  <div class="item">
+                    <div class="w-full">
+                      <i
+                        class="fas fa-object-group text-blue-300 text-5xl mb-1"
+                      ></i>
+                      <p class="text-2xl">Each sub-image contains<br />~220 target objects</p>
+                    </div>
+                  </div>
+                  <div class="item">
+                    <div class="w-full">
+                      <i class="fas fa-server text-blue-300 text-5xl mb-1"></i>
+                      <p class="text-2xl">
+                        Training Hardware: 8×NVIDIA<br />A100-PCIE-40GB GPU
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Show zscale effect -->
+        <!-- New Fade Animation Slide - Step 1 -->
+        <section>
+          <section data-auto-animate>
+            <h3>Image Contrast Enhancement</h3>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="img_nolim.png"
+                  alt="Image 1"
+                  style="opacity: 1"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="img_vmax1000.png"
+                  alt="Image 2"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image3"
+                  data-fig-name="img_vmax100.png"
+                  alt="Image 3"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image4"
+                  data-fig-name="img_zscale.png"
+                  alt="Image 4"
+                  style="opacity: 0"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-1" style="opacity: 1">
+                Original image displayed directly
+              </p>
+            </div>
+          </section>
+          <section data-auto-animate>
+            <h3>Image Contrast Enhancement</h3>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="img_nolim.png"
+                  alt="Image 1"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="img_vmax1000.png"
+                  alt="Image 2"
+                  style="opacity: 1"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image3"
+                  data-fig-name="img_vmax100.png"
+                  alt="Image 3"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image4"
+                  data-fig-name="img_zscale.png"
+                  alt="Image 4"
+                  style="opacity: 0"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-2" style="opacity: 1">
+                Original image vmax=1000
+              </p>
+            </div>
+          </section>
+
+          <!-- New Fade Animation Slide - Step 2 -->
+          <section data-auto-animate>
+            <h3>Image Contrast Enhancement</h3>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="img_nolim.png"
+                  alt="Image 1"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="img_vmax1000.png"
+                  alt="Image 2"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image3"
+                  data-fig-name="img_vmax100.png"
+                  alt="Image 3"
+                  style="opacity: 1"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image4"
+                  data-fig-name="img_zscale.png"
+                  alt="Image 4"
+                  style="opacity: 0"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-3" style="opacity: 1">
+                Original image vmax=100
+              </p>
+            </div>
+          </section>
+
+          <!-- New Fade Animation Slide - Step 3 -->
+          <section data-auto-animate>
+            <h3>Image Contrast Enhancement</h3>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="img_nolim.png"
+                  alt="Image 1"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="img_vmax1000.png"
+                  alt="Image 2"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image3"
+                  data-fig-name="img_vmax100.png"
+                  alt="Image 3"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image4"
+                  data-fig-name="img_zscale.png"
+                  alt="Image 4"
+                  style="opacity: 1"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-4" style="opacity: 1">
+                ZScale dynamic range compression indirectly improves image contrast
+              </p>
+            </div>
+          </section>
+        </section>
+        <section>
+          <!-- Step 1: Initial 400x400 figure -->
+          <section data-auto-animate>
+            <h3>Image Slicing and Stretching</h3>
+            <div
+              class="stripe-figure-stage"
+              data-id="horizontal-stripe-wrapper"
+              style="
+                width: 600px;
+                height: 600px;
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(10, 1fr);
+                gap: 0px;
+                border-radius: 0px;
+                overflow: hidden;
+                /* background-image is set by JS */
+                background-size: cover;
+                background-position: center;
+                position: relative;
+              "
+              data-fig-name="MSC_0000031.jpg"
+            >
+              <div data-id="h_s1" style="background-color: transparent"></div>
+              <div data-id="h_s2" style="background-color: transparent"></div>
+              <div data-id="h_s3" style="background-color: transparent"></div>
+              <div data-id="h_s4" style="background-color: transparent"></div>
+              <div data-id="h_s5" style="background-color: transparent"></div>
+              <div data-id="h_s6" style="background-color: transparent"></div>
+              <div data-id="h_s7" style="background-color: transparent"></div>
+              <div data-id="h_s8" style="background-color: transparent"></div>
+              <div data-id="h_s9" style="background-color: transparent"></div>
+              <div data-id="h_s10" style="background-color: transparent"></div>
+            </div>
+            <p class="slide-caption">Original slitless spectral image 9216x9232 pixels.</p>
+          </section>
+
+          <!-- Step 2: Split into 10 distinct horizontal 400x40px stripes -->
+          <section data-auto-animate>
+            <h3>Horizontal Slicing</h3>
+            <div
+              class="stripe-figure-stage"
+              data-id="horizontal-stripe-wrapper"
+              style="
+                width: 600px;
+                height: 654px;
+                display: grid;
+                position: relative;
+                grid-template-columns: 600px;
+                grid-template-rows: repeat(10, 60px);
+                gap: 6px;
+                border-radius: 0px;
+                overflow: visible;
+                background-image: none;
+                box-shadow: none;
+              "
+            >
+              <div
+                data-id="h_s1"
+                data-fig-name="MSC_0000031_0.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s2"
+                data-fig-name="MSC_0000031_1.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s3"
+                data-fig-name="MSC_0000031_2.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s4"
+                data-fig-name="MSC_0000031_3.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s5"
+                data-fig-name="MSC_0000031_4.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s6"
+                data-fig-name="MSC_0000031_5.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s7"
+                data-fig-name="MSC_0000031_6.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s8"
+                data-fig-name="MSC_0000031_7.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s9"
+                data-fig-name="MSC_0000031_8.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+              <div
+                data-id="h_s10"
+                data-fig-name="MSC_0000031_9.jpg"
+                style="background-size: 100% 100%"
+              ></div>
+            </div>
+            <p class="slide-caption">
+              Original image split into 10 independent horizontal stripes (each 9216x979, with 62 pixels of overlap)
+            </p>
+          </section>
+
+          <!-- Step 3: Horizontal Stripes become 200x200 squares and form a 5x2 grid -->
+          <section data-auto-animate>
+            <h3>Stretching and Scaling</h3>
+            <div
+              class="stripe-figure-stage"
+              data-id="horizontal-stripe-wrapper"
+              style="
+                width: 1036px;
+                height: 409px;
+                display: grid;
+                position: relative;
+                grid-template-columns: repeat(5, 200px);
+                grid-template-rows: repeat(2, 200px);
+                gap: 9px;
+                border-radius: 0px;
+                overflow: visible;
+                background-image: none;
+                box-shadow: none;
+              "
+            >
+              <div
+                data-id="h_s1"
+                data-fig-name="MSC_0000031_0.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s2"
+                data-fig-name="MSC_0000031_1.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s3"
+                data-fig-name="MSC_0000031_2.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s4"
+                data-fig-name="MSC_0000031_3.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s5"
+                data-fig-name="MSC_0000031_4.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s6"
+                data-fig-name="MSC_0000031_5.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s7"
+                data-fig-name="MSC_0000031_6.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s8"
+                data-fig-name="MSC_0000031_7.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s9"
+                data-fig-name="MSC_0000031_8.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+              <div
+                data-id="h_s10"
+                data-fig-name="MSC_0000031_9.jpg"
+                style="
+                  position: static;
+                  top: auto;
+                  left: auto;
+                  width: 100%;
+                  height: 100%;
+                  background-size: 100% 100%;
+                "
+              ></div>
+            </div>
+            <p class="slide-caption">
+              Stretched to squares, approx. 4500x4500 pixels (memory limit)
+            </p>
+          </section>
+        </section>
+        <section>
+          <section data-auto-animate>
+            <div><h3>Labeling Bounding Boxes</h3></div>
+
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="MSC_0000031_0.jpg"
+                  alt="Image 1"
+                  style="opacity: 1"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="MSC_0000031_0_box.jpg"
+                  alt="Image 2"
+                  style="opacity: 0"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-1" style="opacity: 1">
+                Example of a single image (SimA, stars only)
+              </p>
+            </div>
+          </section>
+          <section data-auto-animate>
+            <div><h3>Labeling Bounding Boxes</h3></div>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="MSC_0000031_0.jpg"
+                  alt="Image 1"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="MSC_0000031_0_box.jpg"
+                  alt="Image 2"
+                  style="opacity: 1"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-2" style="opacity: 1">
+                Labeling bounding boxes for <span class="text-yellow-300">zero-order traces</span> and <span
+                  class="text-blue-300"
+                  >first-order traces</span
+                >, considering only bright stars, \( m \le 22\)
+              </p>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h2>Training</h2>
+          <div style="margin-top: 50px"></div>
+          <p>Retained the model's default image augmentation techniques</p>
+          <p>Considering source density and to avoid excessive bounding box overlap, training was performed on SimA mwl90b20</p>
+        </section>
+
+        <!-- New Slide explaining IoU, Precision, Recall, mAP -->
+
+        <section>
+          <section data-auto-animate>
+            <p class="text-red-300">Spectral Trace Detection Results (GI01, mwl90b20, YOLOv5s)</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_01_fn_batch2.jpg"
+                    alt="Figure 1"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_02_fn_batch2.jpg"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_03_fn_batch0.jpg"
+                    alt="Figure 5"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  Ground Truth
+                  <span style="color: rgba(237, 39, 230, 0.798)">
+                    FN False Negative (Missed Detection)</span
+                  >
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_01_fp_batch2.jpg"
+                    alt="Figure 2"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_02_fp_batch2.jpg"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_03_fp_batch0.jpg"
+                    alt="Figure 6"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1; margin-bottom: -30px"
+                >
+                  Prediction
+                  <span style="color: rgba(39, 237, 230, 0.798)">
+                    "FP False Positive (False Alarm)"</span
+                  >
+                </p>
+              </div>
+            </div>
+          </section>
+          <section data-auto-animate>
+            <p class="text-green-300">Spectral Trace Detection Results (GV02, mwl90b20, YOLOv5s)</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_01_fn_batch2.jpg"
+                    alt="Figure 1"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_02_fn_batch2.jpg"
+                    alt="Figure 3"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_03_fn_batch0.jpg"
+                    alt="Figure 5"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  Ground Truth
+                  <span style="color: rgba(237, 39, 230, 0.798)">
+                    FN False Negative (Missed Detection)</span
+                  >
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_01_fp_batch2.jpg"
+                    alt="Figure 2"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_02_fp_batch2.jpg"
+                    alt="Figure 4"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_03_fp_batch0.jpg"
+                    alt="Figure 6"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  Prediction
+                  <span style="color: rgba(39, 237, 230, 0.798)">
+                    "FP False Positive (False Alarm)"</span
+                  >
+                </p>
+              </div>
+            </div>
+          </section>
+          <section data-auto-animate>
+            <p class="text-purple-300">Spectral Trace Detection Results (GU03, mwl90b20, YOLOv5s)</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_01_fn_batch2.jpg"
+                    alt="Figure 1"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_02_fn_batch2.jpg"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_03_fn_batch0.jpg"
+                    alt="Figure 5"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  Ground Truth
+                  <span style="color: rgba(237, 39, 230, 0.798)">
+                    FN False Negative (Missed Detection)</span
+                  >
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_01_fp_batch2.jpg"
+                    alt="Figure 2"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_02_fp_batch2.jpg"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="chip_03_fp_batch0.jpg"
+                    alt="Figure 6"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  Prediction
+                  <span style="color: rgba(39, 237, 230, 0.798)">
+                    "FP False Positive (False Alarm)"</span
+                  >
+                </p>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h2>Model Performance Evaluation Metrics</h2>
+          <div class="iou-container">
+            <div class="iou-explanation">
+              <p class="text-3xl">IoU (Intersection over Union)</p>
+              <pre><code class="text-blue-300" style="font-size: 0.8em; padding: 10px; border-radius: 5px;">IoU = Area of Overlap / Area of Union</code></pre>
+              <p class="text-2xl">
+                Intersection over Union is a metric that measures the degree of overlap between the model's predicted bounding box (Prediction) and the actual object's bounding box (Ground Truth).
+              </p>
+              <p class="text-2xl">
+                It is the result of the "intersection" area of these two regions divided by their "union" area. A higher IoU value indicates more accurate model localization.
+                <span class="text-red-300 text-2xl"
+                  >When IoU is greater than 0.7, we consider the model to have successfully predicted the target.</span
+                >
+              </p>
+            </div>
+            <div class="flex-1" style="margin-left: 200px">
+              <div class="flex items-center">
+                IoU=
+                <div
+                  class="iou-visualization"
+                  style="width: 120px background-color: rgba(0, 255, 0, 0.131))"
+                >
+                  <div class="iou-box ground-truth-box"></div>
+                  <div class="iou-box prediction-box"></div>
+                  <div class="iou-box intersection-area"></div>
+
+                  <div class="iou-box ground-truth-box2"></div>
+                  <svg width="200" height="200">
+                    <line
+                      x1="0"
+                      y1="150"
+                      x2="200"
+                      y2="150"
+                      stroke="#64ffda"
+                      stroke-width="2"
+                    />
+                  </svg>
+                  <div class="iou-box prediction-box2"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-4 mt-8">
+            <div class="item-card">
+              <p class="text-blue-300 text-4xl">
+                <i class="fas fa-bullseye mr-2 text-blue-300"></i>Precision
+              </p>
+              <p class="text-2xl">
+                The proportion of true positives among all results predicted as positive by the model. Measures the accuracy of the model's predictions.
+              </p>
+            </div>
+            <div class="item-card">
+              <p class="text-blue-300 text-4xl">
+                <i class="fas fa-search mr-2 text-blue-300"></i>Recall
+              </p>
+              <p class="text-2xl">
+                The proportion of true positives that were successfully predicted by the model. Measures whether the model "finds everything".
+              </p>
+            </div>
+             <div class="item-card">
+            <p class="text-blue-300 text-4xl">
+              <i class="fas fa-chart-line mr-2 text-blue-300"></i>mAP
+              (mean Average Precision)
+            </p>
+            <p class="text-2xl">
+              mAP is a core metric for evaluating the overall performance of an object detection model. It is calculated by finding the average precision (AP) for each class and then averaging the AP values across all classes. A high mAP value means the model has high precision and high recall across all classes. AP is the area under the Precision-Recall curve.
+            </p>
+          </div>
+          </div>
+        </section>
+
+        <section>
+          <section>
+            <h2>YOLOv5 Sub-model Comparison</h2>
+            <p>
+              <span class="text-blue-300">P5</span> vs
+              <span class="text-red-300">P6</span>
+            </p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                  style="width: 400px; height: 300px"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="model_layers.png"
+                    alt="Figure 1"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  Layers
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                  style="width: 400px; height: 300px"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="model_parameters.png"
+                    alt="Figure 2"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  Parameters
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section data-auto-animate>
+            <h3>YOLOv5 Model Performance Evaluation</h3>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                style="width: 800px; height: 600px"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="yolov5_matrix_A.jpg"
+                  alt="Image 1"
+                  style="
+                    opacity: 1;
+                    border: 2px solid rgba(100, 255, 218, 0.5);
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 5px;
+                  "
+                />
+              </div>
+              <div>
+                <p class="slide-caption" data-id="caption-1" style="opacity: 1">
+                  First-Order Traces
+                </p>
+                <span class="text-blue-300">\( F_{1 max} \)</span>
+                <span class="text-orange-400">Recall</span>
+                <span class="text-green-300">Precision</span>
+                <span class="text-red-400">AP</span>
+              </div>
+            </div>
+          </section>
+          <section data-auto-animate>
+            <h3>YOLOv5 Model Performance Evaluation</h3>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                style="width: 800px; height: 600px"
+                data-id="fade-img-wrapper"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="yolov5_matrix_B.jpg"
+                  alt="Image 1"
+                  style="
+                    opacity: 1;
+                    border: 2px solid rgba(100, 255, 218, 0.5);
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 5px;
+                  "
+                />
+              </div>
+              <div>
+                <p class="slide-caption" data-id="caption-2" style="opacity: 1">
+                  Zero-Order Traces
+                </p>
+                <span class="text-blue-300">F1 max</span>
+                <span class="text-orange-400">Recall</span>
+                <span class="text-green-300">Precision</span>
+                <span class="text-red-400">AP</span>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h2>Recall Rate Comparison Across Different Bands</h2>
+          <div class="static-figure-container">
+            <img
+              class="magnifiable"
+              data-fig-name="model_recall_with_values.png"
+              alt="Static figure example"
+            />
+          </div>
+          <p class="slide-caption">
+            <span class="text-blue-300">First-Order Traces</span> and <span
+              class="text-red-300"
+              >Zero-Order Traces</span
+            >, @confidence \( \ge 0.25 \).
+          </p>
+        </section>
+        <section>
+          <section>
+            <h2>Dense Stellar Fields</h2>
+            <div style="margin-top: 50px"></div>
+            <p>Severe source overlap in dense fields, data cannot be used for training</p>
+            <p>But the model trained on mwl90b20 data can be applied</p>
+          </section>
+          <section data-auto-animate>
+            <p class="text-red-300">Dense Field Spectral Trace Detection Results (GI01, mwl90b10)</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolov5s_gi_b10_gt.jpg"
+                    alt="Figure 5"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  Ground Truth
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolov5s_gi_b10_pred.jpg"
+                    alt="Figure 6"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  Prediction
+                </p>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2>Conclusion</h2>
+            <p>In dense fields, the YOLO model can identify overlapping traces</p>
+            <p>Severe bounding box overlap makes it impossible to accurately evaluate metrics like precision and recall</p>
+            <p>Visually, the detection positions are very good</p>
+          </section>
+        </section>
+
+        <section>
+          <h2>What More Can Be Done?</h2>
+          <div style="margin-top: 50px"></div>
+          <p>For example, finer classification of celestial sources</p>
+          <p>Using Simulation B, the latest 5 sq. degree simulation data, containing stars, galaxies, and quasars</p>
+        </section>
+        <section>
+          <h2>YOLOv11</h2>
+          <div class="static-figure-container">
+            <img
+              class="magnifiable"
+              data-fig-name="yolo11vs.png"
+              alt="Static figure example"
+              style="border-radius: 50px"
+            />
+          </div>
+          <p class="slide-caption">
+            YOLOv11, with higher classification accuracy, can handle finer classifications, such as distinguishing between stars and galaxies
+          </p>
+          <p class="slide-caption">
+            However, due to server performance limitations, only the 'n' and 's' models can be run on the medium-density simulation data (SimB) on Geranium. We chose YOLOv11s.
+          </p>
+        </section>
+
+        <!-- SLIDE 1: GI Band Results -->
+        <section>
+          <section><h2>Instance 1: Detecting Stars and Galaxies</h2></section>
+          <section data-auto-animate>
+            <p data-id="results-title" class="text-red-300">
+              Spectral Trace Detection Results (GI01, mwl90b20, YOLOv11s)
+            </p>
+            <div class="three-column-layout-fade">
+              <!-- Column 1: Ground Truth -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-gt"
+              >
+                <div class="image-placeholder-3" data-id="img-gt-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gi_gt.jpg"
+                    alt="GI GT"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gv_gt.jpg"
+                    alt="GV GT"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gu_gt.jpg"
+                    alt="GU GT"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p class="slide-caption">Ground Truth</p>
+              </div>
+              <!-- Column 2: Prediction -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-pred"
+              >
+                <div class="image-placeholder-3" data-id="img-pred-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gi_pred.jpg"
+                    alt="GI Pred"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gv_pred.jpg"
+                    alt="GV Pred"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gu_pred.jpg"
+                    alt="GU Pred"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p class="slide-caption">Prediction</p>
+              </div>
+              <!-- Column 3: Confusion Matrix -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-cm"
+              >
+                <div class="image-placeholder-3" data-id="img-cm-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gi.png"
+                    alt="GI CM"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gv.png"
+                    alt="GV CM"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gu.png"
+                    alt="GU CM"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p class="slide-caption">Confusion Matrix</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- SLIDE 2: GV Band Results -->
+          <section data-auto-animate>
+            <p data-id="results-title" class="text-green-300">
+              Spectral Trace Detection Results (GV02, mwl90b20, YOLOv11)
+            </p>
+            <div class="three-column-layout-fade">
+              <!-- Column 1: Ground Truth -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-gt"
+              >
+                <div class="image-placeholder-3" data-id="img-gt-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gi_gt.jpg"
+                    alt="GI GT"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gv_gt.jpg"
+                    alt="GV GT"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gu_gt.jpg"
+                    alt="GU GT"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p class="slide-caption">Ground Truth</p>
+              </div>
+              <!-- Column 2: Prediction -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-pred"
+              >
+                <div class="image-placeholder-3" data-id="img-pred-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gi_pred.jpg"
+                    alt="GI Pred"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gv_pred.jpg"
+                    alt="GV Pred"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gu_pred.jpg"
+                    alt="GU Pred"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p class="slide-caption">Prediction</p>
+              </div>
+              <!-- Column 3: Confusion Matrix -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-cm"
+              >
+                <div class="image-placeholder-3" data-id="img-cm-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gi.png"
+                    alt="GI CM"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gv.png"
+                    alt="GV CM"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gu.png"
+                    alt="GU CM"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p class="slide-caption">Confusion Matrix</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- SLIDE 3: GU Band Results -->
+          <section data-auto-animate>
+            <p data-id="results-title" class="text-purple-300">
+              Spectral Trace Detection Results (GU03, mwl90b20, YOLOv11)
+            </p>
+            <div class="three-column-layout-fade">
+              <!-- Column 1: Ground Truth -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-gt"
+              >
+                <div class="image-placeholder-3" data-id="img-gt-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gi_gt.jpg"
+                    alt="GI GT"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gv_gt.jpg"
+                    alt="GV GT"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gu_gt.jpg"
+                    alt="GU GT"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p class="slide-caption">Ground Truth</p>
+              </div>
+              <!-- Column 2: Prediction -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-pred"
+              >
+                <div class="image-placeholder-3" data-id="img-pred-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gi_pred.jpg"
+                    alt="GI Pred"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gv_pred.jpg"
+                    alt="GV Pred"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11s_sg_gu_pred.jpg"
+                    alt="GU Pred"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p class="slide-caption">Prediction</p>
+              </div>
+              <!-- Column 3: Confusion Matrix -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-cm"
+              >
+                <div class="image-placeholder-3" data-id="img-cm-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gi.png"
+                    alt="GI CM"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gv.png"
+                    alt="GV CM"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="confusion_matrix_yolo11s_sg_gu.png"
+                    alt="GU CM"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p class="slide-caption">Confusion Matrix</p>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h2>What More Can Be Done?</h2>
+          <div style="margin-top: 50px"></div>
+          <p>Finer classification</p>
+        </section>
+
+        <section>
+          <section>
+            <h2>Instance 2: Star Detection and Spectral Type Classification</h2>
+            <div style="margin-top: 50px"></div>
+            <p>Stars only, random catalog \( g \;{\rm mag} \sim N(20,2)\)</p>
+          </section>
+
+          <section data-auto-animate>
+            <p data-id="results-title" class="text-red-300">
+              Spectral Trace Detection Results (GI01, random catalog, YOLOv11s)
+            </p>
+            <div class="two-column-layout-fade">
+              <!-- Column 1: Ground Truth -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-gt"
+              >
+                <div class="image-placeholder-2" data-id="img-gt-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11_spec_class_val_batch1_labels.jpg"
+                    alt="GI GT"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p class="slide-caption">Ground Truth for Stellar Spectral Types</p>
+              </div>
+
+              <!-- Column 2: Prediction -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-pred"
+              >
+                <div class="image-placeholder-2" data-id="img-pred-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="yolo11_spec_class_val_batch1_pred.jpg"
+                    alt="GI Pred"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p class="slide-caption">Prediction for Stellar Spectral Types</p>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <div class="static-figure-container">
+              <img
+                class="magnifiable"
+                data-fig-name="yolo11_cm_spec_class.png"
+                alt="Static figure example"
+                style="border-radius: 10px"
+              />
+            </div>
+            <h3>Confusion Matrix for Stellar Spectral Type Classification</h3>
+            <p>The quasi-diagonal distribution indicates that the model can extract features of different spectral types.</p>
+          </section>
+          <section>
+            <h2>Conclusion</h2>
+            <div style="margin-top: 50px"></div>
+            <p>The YOLO model performs well for stellar spectral type classification</p>
+            <p>
+              It is promising for extracting continuous parameters, such as \({\rm T_{eff}}\), \({{\rm
+              log}\;g}\) and \({\rm [Fe/H]}\)
+            </p>
+            <p>Implementation: The YOLO network head can be modified for regression tasks</p>
+          </section>
+        </section>
+
+        <section>
+          <h2>What More Can Be Done?</h2>
+          <div style="margin-top: 50px"></div>
+          <p>Galaxy Redshift</p>
+        </section>
+
+        <section>
+          <section>
+            <h2>Instance 3: Galaxy Detection and Redshift Classification</h2>
+            <div style="margin-top: 50px"></div>
+            <p>Transforming a regression problem into a classification problem through simple binning</p>
+          </section>
+          <section data-auto-animate>
+            <p data-id="results-title" class="text-red-300">
+              Galaxy Redshift Classification (SimB, YOLOv11s)
+            </p>
+            <div class="two-column-layout-fade">
+              <!-- Column 1: Ground Truth -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-gt"
+              >
+                <div class="image-placeholder-2" data-id="img-gt-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="galaxyz_11s_gi_gt.jpg"
+                    alt="GI GT"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p class="slide-caption">Ground Truth for Galaxy Redshift (Discrete)</p>
+              </div>
+
+              <!-- Column 2: Prediction -->
+              <div
+                class="figure-with-caption magnifiable-container"
+                data-id="col-pred"
+              >
+                <div class="image-placeholder-2" data-id="img-pred-placeholder">
+                  <img
+                    class="magnifiable"
+                    data-fig-name="galaxyz_11s_gi_pred.jpg"
+                    alt="GI Pred"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p class="slide-caption">Prediction for Galaxy Redshift (Discrete)</p>
+              </div>
+            </div>
+          </section>
+          <section>
+            <div class="static-figure-container">
+              <img
+                class="magnifiable"
+                data-fig-name="confusion_matrix_normalized_gi_galaxyz.png"
+                alt="Static figure example"
+                style="border-radius: 10px"
+              />
+            </div>
+            <h4>Confusion Matrix for Discrete Galaxy Redshift, \(z \in [0,1.2+]\), 13 bins</h4>
+            <p>The quasi-diagonal distribution indicates that the model can extract features related to galaxy redshift.</p>
+          </section>
+          <section>
+            <div class="static-figure-container">
+              <img
+                class="magnifiable"
+                data-fig-name="confusion_matrix_normalized_24bins.png"
+                alt="Static figure example"
+                style="border-radius: 10px"
+              />
+            </div>
+            <h4>Confusion Matrix for Discrete Galaxy Redshift, \(z \in [0,1.2+]\), 25 bins</h4>
+            <p>When the bins are finer, the diagonal distribution is more pronounced</p>
+          </section>
+
+          <section>
+            <h2>Conclusion</h2>
+            <div style="margin-top: 50px"></div>
+            <p>It is possible to directly detect galaxies and provide their redshift values from slitless spectral images</p>
+            <p>Implementation: The YOLO network head can be modified for regression tasks</p>
+          </section>
+        </section>
+
+        <section>
+          <h2>What More Can Be Done?</h2>
+          <div style="margin-top: 50px"></div>
+          <p>The catalog also contains quasars</p>
+        </section>
+
+        <section>
+          <section>
+            <h2>Instance 4: Special Source Detection - Quasars</h2>
+            <div style="margin-top: 50px"></div>
+            <p>Quasars are rare and faint</p>
+          </section>
+
+          <section data-auto-animate>
+            <p class="text-red-300">Quasar Detection (GI01, YOLOv11s)</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="qusar_img_gt_batch2.png"
+                    alt="Figure 1"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="qusar_img_gt_batch3.png"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="qusar_img_gt_batch4.png"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="qusar_img_gt_batch6.png"
+                    alt="Figure 5"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  Ground Truth
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch2.png"
+                    alt="Figure 2"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch3.png"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch4.png"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch6.png"
+                    alt="Figure 6"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  Prediction
+                </p>
+              </div>
+              <p>Example 1: Two bright quasars, both detected. There are also many false positives.</p>
+            </div>
+          </section>
+
+          <section data-auto-animate>
+            <p class="text-red-300">Quasar Detection (GI01, YOLOv11s)</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch2.png"
+                    alt="Figure 1"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch3.png"
+                    alt="Figure 3"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch4.png"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch6.png"
+                    alt="Figure 5"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  Ground Truth
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch2.png"
+                    alt="Figure 2"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch3.png"
+                    alt="Figure 4"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch4.png"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch6.png"
+                    alt="Figure 6"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  Prediction
+                </p>
+              </div>
+              <p>Example 2: A less bright quasar, detected.</p>
+            </div>
+          </section>
+
+          <section data-auto-animate>
+            <p class="text-red-300">Quasar Detection (GI01, YOLOv11s)</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch2.png"
+                    alt="Figure 1"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch3.png"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch4.png"
+                    alt="Figure 3"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch6.png"
+                    alt="Figure 5"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  Ground Truth
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch2.png"
+                    alt="Figure 2"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch3.png"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch4.png"
+                    alt="Figure 4"
+                    style="opacity: 1"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch6.png"
+                    alt="Figure 6"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  Prediction
+                </p>
+              </div>
+              <p>Example 3: A fainter quasar, not detected</p>
+            </div>
+          </section>
+
+          <section data-auto-animate>
+            <p class="text-red-300">Quasar Detection (GI01, YOLOv11s)</p>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch2.png"
+                    alt="Figure 1"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch3.png"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch4.png"
+                    alt="Figure 3"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_gt_batch6.png"
+                    alt="Figure 5"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  Ground Truth
+                </p>
+              </div>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch2.png"
+                    alt="Figure 2"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch3.png"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch4.png"
+                    alt="Figure 4"
+                    style="opacity: 0"
+                  />
+                  <img
+                    class="magnifiable"
+                    data-fig-name="quasar_img_pred_batch6.png"
+                    alt="Figure 6"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  Prediction
+                </p>
+              </div>
+              <p>Example 4: A fainter quasar, successfully detected.</p>
+            </div>
+          </section>
+          <section>
+            <div class="static-figure-container">
+              <img
+                class="magnifiable"
+                data-fig-name="quasar_recall_precision.png"
+                alt="Static figure example"
+                style="border-radius: 10px"
+              />
+            </div>
+            <h4>Precision-Recall Curve</h4>
+            <p class="slide-caption">
+              The closer the PR curve is to the top right, the better the model performs. However, considering that quasars are rare sources, we can accept a lower precision.
+            </p>
+          </section>
+          <section>
+            <h2>Conclusion</h2>
+            <div style="margin-top: 50px"></div>
+            <p>The YOLO model can detect rare and faint quasars</p>
+            <p>YOLO can be used for rapid detection of special sources</p>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Discussion</h2>
+            <div style="margin-top: 50px"></div>
+            <p>Limiting Magnitude, Cross-Band Comparison, Bounding Box Localization Accuracy</p>
+          </section>
+          <section>
+            <h3>Limiting Magnitude</h3>
+          </section>
+          <section data-auto-animate>
+            <div><h3>Faint Source Ground Truth</h3></div>
+
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+                style="width: 600px; height: 600px"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="maglim_analyse.png"
+                  alt="Image 1"
+                  style="opacity: 1"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="magl_lim_fnfp.jpg"
+                  alt="Image 2"
+                  style="opacity: 0"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-1" style="opacity: 1">
+                Stellar magnitude \( \in (23,25]\), Galaxy magnitude \( \in (21,22.5]\)
+              </p>
+            </div>
+          </section>
+
+          <section data-auto-animate>
+            <div><h3>Faint Source Detection Results</h3></div>
+            <div class="one-column-layout-fade">
+              <div
+                class="image-placeholder-1 magnifiable-container"
+                data-id="fade-img-wrapper"
+                style="width: 600px; height: 600px"
+              >
+                <img
+                  class="magnifiable"
+                  data-id="image1"
+                  data-fig-name="maglim_analyse.jpg"
+                  alt="Image 1"
+                  style="opacity: 0"
+                />
+                <img
+                  class="magnifiable"
+                  data-id="image2"
+                  data-fig-name="mag_lim_fnfp.jpg"
+                  alt="Image 2"
+                  style="opacity: 1"
+                />
+              </div>
+              <p class="slide-caption" data-id="caption-2" style="opacity: 1">
+                <span style="color: #64ffda">Pseudo FP</span> (usually ground truth outside the magnitude threshold) and <span style="color: #f764ff"
+                  >FN</span
+                > (missed detections within the magnitude threshold)
+              </p>
+            </div>
+          </section>
+          <section>
+            <h2>Recall Rate Comparison Across Different Bands</h2>
+          </section>
+
+          <section>
+            <h2>Recall Rate Comparison Across Different Bands</h2>
+            <div class="static-figure-container">
+              <img
+                class="magnifiable"
+                data-fig-name="model_recall_with_values_sg.png"
+                alt="Static figure example"
+              />
+            </div>
+            <p class="slide-caption">
+              <span style="color: #ffd700">S0</span>,
+              <span style="color: #6495ed">S1</span>,
+              <span style="color: #ff796c">G0</span> and <span
+                style="color: #c79fef"
+                >G1</span
+              > recall rate, @confidence \( \ge 0.25 \)
+            </p>
+          </section>
+
+          <section>
+            <h2>Bounding Box Offset</h2>
+          </section>
+
+          <section>
+            <h2>Bounding Box Offset</h2>
+            <div class="static-figure-container">
+              <img
+                class="magnifiable"
+                data-fig-name="offset.png"
+                alt="Static figure example"
+              />
+            </div>
+            <p>
+              X-axis offset: <span style="color: #ffd700">S0</span> is about <span
+                style="color: #ffd700"
+                >1</span> pixel, <span style="color: #6495ed">S1</span> is about <span
+                style="color: #6495ed"
+                >3</span> pixels, <span style="color: #ff796c">G0</span> is about <span
+                style="color: #ff796c"
+                >2</span> pixels, and <span style="color: #c79fef">G1</span> is about <span
+                style="color: #c79fef"
+                >5</span> pixels. Converted to the original image, this is about <span style="color: #ffd700">2</span>, <span style="color: #6495ed">6</span>, <span
+                style="color: #ff796c"
+                >4</span>, and <span style="color: #c79fef">10</span> pixels.
+            </p>
+            <p>
+              Y-axis offset: For all spectral traces, it is about <span class="text-green-400"
+                >5</span
+              > pixels. Converted to the original image, this is about <span class="text-green-400">1</span
+              > pixel.
+            </p>
+          </section>
+        </section>
+
+        <section>
+          <section class="center-content">
+            <h2>YOLOv5 Network Architecture Analysis</h2>
+            <div style="margin-top: 50px"></div>
+            <p class="text-3xl mt-6 text-gray-300">How YOLO Performs Efficient Feature Extraction</p>
+          </section>
+
+          <!-- Slide 1: Core Modules -->
+          <section>
+            <h3 class="text-4xl font-bold text-yellow-200 mb-8">
+              Core Modules: The Foundation of a High-Performance Network
+            </h3>
+            <div class="grid grid-cols-3 gap-8">
+              <div class="item-card">
+                <div class="text-center mb-4">
+                  <i class="fas fa-layer-group text-5xl text-blue-300"></i>
+                </div>
+                <h4
+                  class="text-2xl font-semibold text-blue-200 mb-3 text-center"
+                >
+                  ConvBNSiLU
+                </h4>
+                <p style="font-size: 20pt">
+                  The basic component of the network, consisting of the following three parts in series, which can stably and efficiently extract local features:
+                </p>
+                <ul class="space-y2 text-left text-4xl">
+                  <li style="font-size: 20pt">
+                    Convolutional Layer (Conv): Uses learnable filters (or kernels) to slide over the input data to detect spatial patterns such as edges and textures.
+                  </li>
+                  <li style="font-size: 20pt">
+                    Batch Normalization (BN): Standardizes the output of the convolutional layer, bringing its mean close to 0 and variance close to 1. This helps to stabilize the training process and prevent model overfitting.
+                  </li>
+                  <li style="font-size: 20pt">
+                    Activation Function (SiLU): A non-linear activation function that performs well in balancing computational efficiency and model accuracy.
+                  </li>
+                </ul>
+              </div>
+              <div class="item-card">
+                <div class="text-center mb-4">
+                  <i class="fas fa-cogs text-5xl text-green-300"></i>
+                </div>
+                <h4
+                  class="text-2xl font-semibold text-green-200 mb-3 text-center"
+                >
+                  C3 Module
+                </h4>
+                <p style="font-size: 20pt">
+                  This is the core module in YOLOv5 for optimizing feature extraction.
+                  It draws inspiration from ResNet and CSPNet, using "Cross Stage Partial connections" and a Bottleneck structure to reduce computation and memory usage.
+                </p>
+                <p style="font-size: 20pt">
+                  Its dual-path design (one main path through a bottleneck compression, one branch retaining original details) efficiently fuses high-level semantic features and low-level detail features without sacrificing performance.
+                </p>
+              </div>
+              <div class="item-card">
+                <div class="text-center mb-4">
+                  <i class="fas fa-sitemap text-5xl text-red-300"></i>
+                </div>
+                <h4
+                  class="text-2xl font-semibold text-red-200 mb-3 text-center"
+                >
+                  SPPF Module
+                </h4>
+                <p style="font-size: 20pt">
+                  Fast Spatial Pyramid Pooling. This module performs pooling operations on the feature map at different scales, then concatenates the results to generate a fixed-length output.
+                </p>
+                <p style="font-size: 20pt">
+                  This allows the network to handle input images of different sizes and effectively fuse multi-scale contextual information, enhancing the detection capability for targets of different sizes.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Slide 2: Architecture -->
+          <section>
+            <h3 class="text-4xl font-bold text-yellow-200 mb-8">
+              Three-Part Architecture: The Pipeline from Pixels to Predictions
+            </h3>
+            <div class="network-diagram flex-grow items-stretch">
+              <div class="network-component flex flex-col justify-center">
+                <i class="fas fa-bone text-5xl text-blue-300 mb-4"></i>
+                <p
+                  class="mb-2"
+                  style="font-family: Italiana; font-size: 50pt"
+                >
+                  Backbone
+                </p>
+                <p></p>
+                <p>The main feature extractor, it captures hierarchical features from the input.</p>
+                <p>YOLOv5's backbone consists of ConvBNSiLU and C3.</p>
+              </div>
+              <div class="network-arrow">
+                <i class="fas fa-arrow-right"></i>
+              </div>
+              <div class="network-component flex flex-col justify-center">
+                <i
+                  class="fas fa-project-diagram text-5xl text-green-300 mb-4"
+                ></i>
+                <p
+                  class="mb-2"
+                  style="font-family: Italiana; font-size: 50pt"
+                >
+                  Neck
+                </p>
+                <p>
+                  Acts as an intermediary to further refine the features extracted by the backbone. Responsible for effectively fusing and enhancing features from different levels.
+                </p>
+                <p>A bidirectional feature fusion model, where information flows both bottom-up and top-down.</p>
+                <p>YOLOv5 uses SPPF and CSP-PAN structures.</p>
+              </div>
+              <div class="network-arrow">
+                <i class="fas fa-arrow-right"></i>
+              </div>
+              <div class="network-component flex flex-col justify-center">
+                <i class="fas fa-crosshairs text-5xl text-red-300 mb-4"></i>
+                <p
+                  class="mb-2"
+                  style="font-family: Italiana; font-size: 50pt"
+                >
+                  Head
+                </p>
+                <p></p>
+                <p class="text-gray-300">
+                  The head of the network generates the output, calculating bounding boxes, class probabilities, or other relevant information.
+                </p>
+                <p>In YOLOv5, it's GIoU loss + NMS (Non-Maximum Suppression)</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Slide 3: Why it is efficient -->
+          <section>
+            <h3 class="text-4xl font-bold text-yellow-200 mb-8">
+              The Secret to Efficient Feature Extraction
+            </h3>
+            <div class="grid grid-cols-2 grid-rows-2 gap-8">
+              <div class="item-card">
+                <div class="flex items-center mb-3">
+                  <i class="fas fa-stream text-3xl text-teal-300 mr-4"></i>
+                  <p
+                    class="text-2xl font-semibold text-teal-200"
+                    style="font-family: Italiana; font-size: 25pt"
+                  >
+                    Hierarchical Feature Extraction
+                  </p>
+                </div>
+                <p>
+                  Through layer-by-layer convolution, the network mimics the biological visual system, achieving feature abstraction from simple patterns to complex concepts.
+                </p>
+              </div>
+              <div class="item-card">
+                <div class="flex items-center mb-3">
+                  <i
+                    class="fas fa-tachometer-alt text-3xl text-purple-300 mr-4"
+                  ></i>
+                  <p
+                    class="text-2xl font-semibold text-purple-200"
+                    style="font-family: Italiana; font-size: 25pt"
+                  >
+                    Computational Efficiency Optimization
+                  </p>
+                </div>
+                <p>
+                  The lightweight design of modules like C3 ensures feature richness and effective gradient propagation while reducing computational load.
+                </p>
+              </div>
+              <div class="item-card">
+                <div class="flex items-center mb-3">
+                  <i
+                    class="fas fa-expand-arrows-alt text-3xl text-orange-300 mr-4"
+                  ></i>
+                  <p
+                    class="text-2xl font-semibold text-orange-200"
+                    style="font-family: Italiana; font-size: 25pt"
+                  >
+                    Multi-scale Feature Fusion
+                  </p>
+                </div>
+                <p>
+                  The CSP-PAN structure in the neck solves the problem of simultaneously detecting targets of different sizes, making it highly sensitive to objects of all scales.
+                </p>
+              </div>
+              <div class="item-card">
+                <div class="flex items-center mb-3">
+                  <i class="fas fa-crop-alt text-3xl text-indigo-300 mr-4"></i>
+                  <p
+                    class="text-2xl font-semibold text-indigo-200"
+                    style="font-family: Italiana; font-size: 25pt"
+                  >
+                    Flexible Input Adaptability
+                  </p>
+                </div>
+                <p>
+                  The SPPF module enables the network to handle inputs of different sizes, enhancing the model's robustness and versatility.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Conclusion Slide -->
+          <section class="center-content">
+            <h3 class="text-4xl font-bold text-yellow-200 mb-8">Summary</h3>
+            <div style="margin-top: 50px"></div>
+            <p>
+              The success of YOLOv5 stems from its <strong class="text-teal-300"
+                >lightweight module design</strong
+              >, <strong class="text-teal-300">multi-scale fusion architecture</strong
+              >, and <strong class="text-teal-300">clever optimization of computational resources</strong
+              >, ultimately achieving an excellent balance between speed and accuracy.
+            </p>
+          </section>
+        </section>
+
+        <section>
+          <div class="flex flex-col text-white p-10 relative overflow-hidden">
+            <!-- Header -->
+            <div class="mb-6">
+              <h3 class="text-4xl font-bold text-yellow-200 mb-2">
+                Summary of YOLO's Application Scenarios in CSST Spectral Data Analysis
+              </h3>
+            </div>
+            <!-- Introduction -->
+            <p class="text-2xl">
+              As an efficient object detection algorithm, the YOLO model provides innovative solutions for analyzing massive CSST spectral data. Here are the four main application scenarios:
+            </p>
+            <div style="margin-top: 50px"></div>
+            <!-- Main Content - Application Scenarios -->
+            <div class="flex-grow grid grid-cols-2 gap-6">
+              <!-- Spectral Target Detection -->
+              <div class="item-card pt-6 pb-4 px-5 relative">
+                <div class="flex items-start mb-4">
+                  <div
+                    class="icon-container bg-yellow-900 bg-opacity-30 bg-gradient-to-br"
+                  >
+                    <i class="fas fa-bullseye text-3xl text-yellow-300"></i>
+                  </div>
+                  <div>
+                    <h4
+                      class="text-5xl font-semibold text-red-400 mb-3 from-red-500 to-red-700"
+                    >
+                      Spectral Object Detection
+                    </h4>
+                    <p class="text-yellow-200 text-xl">Identifying and Extracting Spectral Traces</p>
+                  </div>
+                </div>
+                <ul
+                  class="space-y-2 text-gray-300 text-2xl flex-grow text-left"
+                >
+                  <li class="flex items-start text-left">
+                    <i
+                      class="fas fa-check-circle text-green-300 mt-1 mr-2 text-left"
+                    ></i>
+                    <span>Accurately identify celestial spectral traces directly from raw 2D spectral images</span>
+                  </li>
+                  <li class="flex items-start text-left">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span
+                      >Effectively detects zero-order and first-order spectral traces, even in highly crowded fields</span
+                    >
+                  </li>
+                  <li class="flex items-start text-left">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span>Helps solve the problem of missing direct imaging in slitless spectroscopy</span>
+                  </li>
+                </ul>
+              </div>
+              <!-- Redshift Measurement -->
+              <div class="item-card pt-6 pb-4 px-5 relative">
+                <div class="flex items-start mb-4">
+                  <div
+                    class="icon-container bg-yellow-900 bg-opacity-30 rounded-full flex items-center justify-center mr-4 flex-shrink-0"
+                  >
+                    <i class="fas fa-chart-line text-3xl text-yellow-300"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-2xl font-semibold text-yellow-100 mb-1">
+                      Redshift Measurement
+                    </h4>
+                    <p class="text-yellow-200 text-xl">
+                      From Classification to Regression for Celestial Distance Estimation
+                    </p>
+                  </div>
+                </div>
+                <ul class="space-y-2 text-gray-300 text-2xl flex-grow">
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span>Maps continuous redshift values to discrete intervals, transforming it into a classification task</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span>Integrates the estimation of discrete astrophysical parameters to achieve binned redshift prediction</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span
+                      >Future research direction: Directly and continuously predict redshift values from raw spectral traces</span
+                    >
+                  </li>
+                </ul>
+              </div>
+              <!-- Celestial Object Classification -->
+              <div class="item-card pt-6 pb-4 px-5 relative">
+                <div class="flex items-start mb-4">
+                  <div
+                    class="icon-container bg-yellow-900 bg-opacity-30 rounded-full flex items-center justify-center mr-4 flex-shrink-0"
+                  >
+                    <i class="fas fa-sitemap text-3xl text-yellow-300"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-2xl font-semibold text-yellow-100 mb-1">
+                      Celestial/Stellar Spectral Type Classification
+                    </h4>
+                    <p class="text-yellow-200 text-xl">
+                      End-to-End Automated Classification Solution
+                    </p>
+                  </div>
+                </div>
+                <ul class="space-y-2 text-gray-300 text-2xl flex-grow">
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span
+                      >Achieves direct source classification (star/galaxy, etc.) from raw 2D spectral images</span
+                    >
+                  </li>
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span>Rapid statistical analysis of targets</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span>Future research direction: Regress stellar parameters from 2D spectral images</span>
+                  </li>
+                </ul>
+              </div>
+              <!-- Rare Celestial Object Identification -->
+              <div class="item-card pt-6 pb-4 px-5 relative">
+                <div class="flex items-start mb-4">
+                  <div
+                    class="icon-container bg-yellow-900 bg-opacity-30 rounded-full flex items-center justify-center mr-4 flex-shrink-0"
+                  >
+                    <i class="fas fa-gem text-3xl text-yellow-300"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-2xl font-semibold text-yellow-100 mb-1">
+                      Rare Celestial Object Identification
+                    </h4>
+                    <p class="text-yellow-200 text-xl">Discovering Cosmic Treasures</p>
+                  </div>
+                </div>
+                <ul class="space-y-2 text-gray-300 text-2xl flex-grow">
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span>Quickly identify special sources by learning their features</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-300 mt-1 mr-2"></i>
+                    <span>Improves detection completeness, finding targets that traditional methods might miss</span>
+                  </li>
+                  <li class="flex items-start">
+                    <i class="fas fa-minus-circle text-red-400 mt-1 mr-2"></i>
+                    <span>Relies on a pre-built catalog</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <!-- Bottom decorative element -->
+          </div>
+        </section>
+
+        <!-- Slide 2: Advantages & Limitations -->
+        <section>
+          <div class="h-full flex flex-col">
+            <!-- Header -->
+            <div class="mb-4 text-center">
+              <h3 class="text-4xl font-bold text-yellow-200 mb-2">
+                Comparison of YOLO with Traditional Astronomical Data Processing Methods
+              </h3>
+            </div>
+            <!-- Main Content -->
+            <div class="flex-grow">
+              <!-- Comparison Table -->
+              <div class="grid grid-cols-2 gap-6 h-full">
+                <!-- YOLO Column -->
+                <div class="flex flex-col">
+                  <div
+                    class="bg-yellow-400 bg-opacity-20 rounded-t-lg p-3 text-center border-b-2 border-yellow-400"
+                  >
+                    <h4
+                      class="text-2xl font-semibold text-yellow-200 flex items-center justify-center"
+                    >
+                      <i class="fas fa-brain text-yellow-300 mr-3"></i>
+                      YOLO Deep Learning Method
+                    </h4>
+                  </div>
+                  <div
+                    class="p-4 flex-grow bg-black bg-opacity-20 rounded-b-lg"
+                  >
+                    <div class="grid grid-cols-2 grid-rows-2 gap-4 h-full">
+                      <div class="item-card">
+                        <h4 class="text-2xl text-yellow-300 mb-2">Processing Speed</h4>
+                        <p class="text-gray-300 text-base">
+                          The original YOLO could reach 45 FPS on a Titan X GPU, with later versions exceeding 150 FPS, enabling efficient processing of massive astronomical images.
+                        </p>
+                        <p class="mt-auto text-xl text-green-400">
+                          <i class="fas fa-check-circle mr-1"></i>
+                          Extremely high processing efficiency
+                        </p>
+                      </div>
+                      <div class="item-card">
+                        <h4 class="text-2xl text-yellow-300 mb-2">
+                          End-to-End Processing
+                        </h4>
+                        <p class="text-gray-300 text-base">
+                          Directly detects, classifies, and analyzes spectral features from raw 2D spectral images, providing an end-to-end solution.
+                        </p>
+                        <p class="mt-auto text-xl text-green-400">
+                          <i class="fas fa-check-circle mr-1"></i> Avoids error accumulation
+                        </p>
+                      </div>
+                      <div class="item-card">
+                        <h4 class="text-2xl text-yellow-300 mb-2">Feature Learning</h4>
+                        <p class="text-gray-300 text-base">
+                          Automatically learns complex features from data without needing manually designed feature extractors, helping to discover unknown patterns.
+                        </p>
+                        <p class="mt-auto text-xl text-green-400">
+                          <i class="fas fa-check-circle mr-1"></i>
+                          Strong generalization ability
+                        </p>
+                      </div>
+                      <div class="item-card">
+                        <h4 class="text-2xl text-yellow-300 mb-2">
+                          Global Information Utilization
+                        </h4>
+                        <p class="text-gray-300 text-base">
+                          Considers the global information of the entire image, better distinguishing targets from the background and reducing background false detections.
+                        </p>
+                        <p class="mt-auto text-xl text-green-400">
+                          <i class="fas fa-check-circle mr-1"></i>
+                          Context-aware capability
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Traditional Column -->
+                <div class="flex flex-col">
+                  <div
+                    class="bg-blue-500 bg-opacity-20 rounded-t-lg p-3 text-center border-b-2 border-blue-500"
+                  >
+                    <h4
+                      class="text-2xl font-semibold text-blue-200 flex items-center justify-center"
+                    >
+                      <i class="fas fa-cogs text-blue-300 mr-3"></i>
+                      Traditional Astronomical Data Processing Methods
+                    </h4>
+                  </div>
+                  <div
+                    class="p-4 flex-grow bg-black bg-opacity-20 rounded-b-lg"
+                  >
+                    <div class="grid grid-cols-2 grid-rows-2 gap-4 h-full">
+                      <div class="item-card2">
+                        <h4 class="text-2xl text-blue-300 mb-2">Processing Speed</h4>
+                        <p class="text-gray-300 text-base">
+                          Involves multiple independent steps like source detection, cross-matching, spectral extraction, and background subtraction, each of which is time-consuming.
+                        </p>
+                        <p class="mt-auto text-xl text-red-400">
+                          <i class="fas fa-times-circle mr-1"></i> Cumbersome processing flow
+                        </p>
+                      </div>
+                      <div class="item-card2">
+                        <h4 class="text-2xl text-blue-300 mb-2">Multi-step Process</h4>
+                        <p class="text-gray-300 text-base">
+                          A multi-step process can easily lead to the accumulation and propagation of errors at each stage, especially in crowded fields or when processing faint targets.
+                        </p>
+                        <p class="mt-auto text-xl text-red-400">
+                          <i class="fas fa-times-circle mr-1"></i> Error accumulation problem
+                        </p>
+                      </div>
+                      <div class="item-card2">
+                        <h4 class="text-2xl text-blue-300 mb-2">Feature Extraction</h4>
+                        <p class="text-gray-300 text-base">
+                          Relies on predefined templates or models based on physical parameters, with generalization ability limited by the completeness of the model and prior knowledge.
+                        </p>
+                        <p class="mt-auto text-xl text-yellow-400">
+                          <i class="fas fa-exclamation-circle mr-1"></i>
+                          Strong physical interpretability
+                        </p>
+                      </div>
+                      <div class="item-card2">
+                        <h4 class="text-2xl text-blue-300 mb-2">Data Dependency</h4>
+                        <p class="text-gray-300 text-base">
+                          Often relies on pre-built photometric and photometric redshift catalogs, which may introduce systematic errors.
+                        </p>
+                        <p class="mt-auto text-xl text-red-400">
+                          <i class="fas fa-times-circle mr-1"></i> Dependency on intermediate products
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Advantages and Limitations Slide -->
+        <section>
+          <div class="h-full flex flex-col">
+            <!-- Header -->
+            <div class="mb-4 text-center">
+              <h3 class="text-4xl font-bold text-yellow-200 mb-2">
+                Advantages and Limitations of the YOLO Model
+              </h3>
+            </div>
+            <!-- Main Content -->
+            <div class="flex-grow">
+              <div class="grid grid-cols-2 gap-6 h-full">
+                <!-- Advantages Section -->
+                <div class="flex flex-col">
+                  <div
+                    class="bg-green-500 bg-opacity-20 rounded-t-lg p-3 text-center border-b-2 border-green-400"
+                  >
+                    <h4
+                      class="text-2xl font-semibold text-green-300 flex items-center justify-center"
+                    >
+                      <i class="fas fa-check text-green-400 mr-3"></i>
+                      Advantages
+                    </h4>
+                  </div>
+                  <div
+                    class="p-4 flex-grow bg-black bg-opacity-20 rounded-b-lg"
+                  >
+                    <div class="grid grid-cols-2 grid-rows-2 gap-4 h-full">
+                      <div class="item-card2">
+                        <h4 class="font-medium text-green-200 text-2xl mb-2">
+                          Processing Speed & Efficiency
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          The YOLO model processes data extremely quickly; current detection tasks can be completed in minutes. There is potential for real-time detection or handling transient sources.
+                        </p>
+                      </div>
+                      <div class="item-card2">
+                        <h4 class="font-medium text-green-200 text-2xl mb-2">
+                          End-to-End Processing Capability
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          Can directly detect, classify, and analyze spectral features from raw or minimally preprocessed 2D images, avoiding error accumulation.
+                        </p>
+                      </div>
+                      <div class="item-card2">
+                        <h4 class="font-medium text-green-200 text-2xl mb-2">
+                          Feature Learning Capability
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          Automatically learns complex features from data without needing manually designed feature extractors, holding potential for diverse astronomical targets.
+                        </p>
+                      </div>
+                      <div class="item-card2">
+                        <h4 class="font-medium text-green-200 text-2xl mb-2">
+                          Global Information Utilization
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          Considers the entire image's global information when making predictions, better distinguishing targets from the background and reducing false detections.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Limitations Section -->
+                <div class="flex flex-col">
+                  <div
+                    class="bg-red-500 bg-opacity-20 rounded-t-lg p-3 text-center border-b-2 border-red-400"
+                  >
+                    <h4
+                      class="text-2xl font-semibold text-red-300 flex items-center justify-center"
+                    >
+                      <i
+                        class="fas fa-exclamation-triangle text-red-400 mr-3"
+                      ></i>
+                      Limitations
+                    </h4>
+                  </div>
+                  <div
+                    class="p-4 flex-grow bg-black bg-opacity-20 rounded-b-lg"
+                  >
+                    <div class="grid grid-cols-2 grid-rows-2 gap-4 h-full">
+                      <div class="item-card3">
+                        <h4 class="font-medium text-red-200 text-2xl mb-2">
+                          Lack of Interpretability
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          Deep learning models have relatively poor interpretability, making it difficult to understand their internal workings and affecting the verifiability of scientific results.
+                        </p>
+                      </div>
+                      <div class="item-card3">
+                        <h4 class="font-medium text-red-200 text-2xl mb-2">
+                          Dependency on Training Data
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          Model performance is highly dependent on the quality and diversity of the training data. Sample imbalance issues can affect the detection accuracy of specific celestial objects.
+                        </p>
+                      </div>
+                      <div class="item-card3">
+                        <h4 class="font-medium text-red-200 text-2xl mb-2">
+                          Computational Resource Requirements
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          Although the YOLO model is relatively efficient, processing the massive CSST data still requires powerful computational support, increasing hardware investment costs.
+                        </p>
+                      </div>
+                      <div class="item-card3">
+                        <h4 class="font-medium text-red-200 text-2xl mb-2">
+                          Accuracy in Specific Tasks
+                        </h4>
+                        <p class="text-lg text-gray-300">
+                          In some specific tasks, accuracy is hard to match with traditional methods, as traditional methods perform measurements while machine learning makes predictions.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h3>Outlook</h3>
+          <div style="margin-top: 50px"></div>
+          <div class="grid grid-cols-3 grid-rows-2 gap-12">
+            <div class="item-card">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-wave-square text-3xl text-teal-300 mr-4"></i>
+                <p
+                  class="text-2xl text-teal-200"
+                  style="font-family: Italiana; font-size: 25pt"
+                >
+                  Handling Continuous Astrophysical Parameters
+                </p>
+              </div>
+              <p style="font-size: 20pt">
+                Improve the model architecture (especially the head) to enable direct regression predictions, such as continuous redshift values for galaxies or stellar metallicity, to replace the current classification binning strategy.
+              </p>
+            </div>
+            <div class="item-card">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-low-vision text-3xl text-purple-300 mr-4"></i>
+                <p
+                  class="text-2xl text-purple-200"
+                  style="font-family: Italiana; font-size: 25pt"
+                >
+                  Improving Sensitivity to Low S/N Targets
+                </p>
+              </div>
+              <p style="font-size: 20pt">
+                Optimize feature extraction layers and loss functions to enhance the model's ability to detect faint objects under low signal-to-noise conditions and reduce missed detections.
+              </p>
+            </div>
+            <div class="item-card">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-brain text-3xl text-orange-300 mr-4"></i>
+                <p
+                  class="text-2xl text-orange-200"
+                  style="font-family: Italiana; font-size: 25pt"
+                >
+                  Integrating Other Deep Learning Technologies
+                </p>
+              </div>
+              <p style="font-size: 20pt">
+                Explore combining advanced techniques like Attention mechanisms and Transformers to further improve the model's accuracy and robustness.
+              </p>
+            </div>
+            <div class="item-card">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-brain text-3xl text-blue-300 mr-4"></i>
+                <p
+                  class="text-2xl text-blue-200"
+                  style="font-family: Italiana; font-size: 25pt"
+                >
+                  Increasing Computation Speed (Real-time Detection)
+                </p>
+              </div>
+              <p style="font-size: 20pt">
+                Currently, image processing capability is at 1 minute per image; there is room for optimizing computation speed.
+              </p>
+            </div>
+
+            <div class="item-card">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-brain text-3xl text-green-300 mr-4"></i>
+                <p
+                  class="text-2xl text-green-200"
+                  style="font-family: Italiana; font-size: 25pt"
+                >
+                  Outlier Detection
+                </p>
+              </div>
+              <p style="font-size: 20pt">
+                As observational data grows, we may not spend much effort on "unremarkable" sources. An outlier detection module is needed to automatically identify unique celestial objects, helping us discover new scientific phenomena.
+              </p>
+            </div>
+
+            <div class="item-card">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-atom text-3xl text-red-300 mr-4"></i>
+                <p
+                  class="text-2xl text-red-200"
+                  style="font-family: Italiana; font-size: 25pt"
+                >
+                  End-to-End Physical Parameter Extraction
+                </p>
+              </div>
+              <p style="font-size: 20pt">
+                Build a fully automated end-to-end framework to directly extract astrophysical parameters from raw 2D spectral images, minimizing manual intervention and error propagation.
+              </p>
+            </div>
+          </div>
+        </section>
+                <section data-state="credits-roll">
+            <div class="credits-roll-container">
+                <div class="credits-content" style="transform: scale(0.85);">
+                    <h2 class="text-4xl font-bold text-yellow-300 mb-6">Acknowledgements</h2>
+              <div style="margin-top: 50px"></div>
+
+              <h3>Advisor</h3>
+              <p>Chao Liu, Researcher</p>
+              <p class="role">Provided the core idea</p>
+              <div style="margin-top: 50px"></div>
+
+              <h3>Core Contributions</h3>
+              <p>Yingying Zhou</p>
+              <p class="role">Model Training & Result Validation</p>
+              <div style="margin-top: 50px"></div>
+              <p>Hao Tian</p>
+              <p class="role">Galactic Simulation Catalog & Paper Writing Motivation</p>
+              <div style="margin-top: 50px"></div>
+              <p>Xin Zhang</p>
+              <p class="role">Slitless Spectra Simulation</p>
+              <div style="margin-top: 50px"></div>
+              <p>Nan Li</p>
+              <p class="role">Machine Learning Scientific Discussion</p>
+              <div style="margin-top: 50px"></div>
+              <div style="margin-top: 50px"></div>
+
+              <h3>Special Thanks</h3>
+              <div style="margin-top: 50px"></div>
+              <p style="font-size:30pt">Thanks to all the scientists and engineers involved in the CSST project,</p>
+              <p style="font-size:30pt">especially those who contributed to the slitless spectra simulation and pipeline.</p>
+              <p style="font-size:30pt">They made it possible for scientific pre-research to proceed smoothly</p>
+              <p style="font-size:30pt">before the launch of CSST.</p>
+              <div style="margin-top: 50px"></div>
+
+              <h3>Funding Support</h3>
+              <div style="margin-top: 50px"></div>
+              <p class="funding-item" style="font-size:30pt">
+                This research was supported by the Beijing Natural Science Foundation Youth Project (No. 1244061), the China Manned Space Engineering Space Science and Application Project (No. CMS-CSST-2021-B03), the National Key R&D Program of China (No. 2022YFF0504200), and the China Manned Space Engineering Space Application System.
+              </p>
+
+              <h3>Technical Support</h3>
+              <p style="font-size:40pt">National Astronomical Observatories' Geranium High-Performance GPU Cluster</p>
+
+              <h3></h3>
+              <p class="text-gray-500 text-lg">--- The End ---</p>
+              <p class="text-gray-500" style="font-size:20pt">--- There's an easter egg at the end ---</p>
+            </div>
+          </div>
+                      <div id="yolo-countdown"></div>
+        </section>
+
+
+      </div>
+    </div>
+
+
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+    <script>
+      // --- MODE CONTROL ---
+      // Set to true to load assets from local folders ('figs/', 'fonts/').
+      // Set to false to load assets from your GitHub Pages URLs.
+      const isLocalMode = false;
+
+      function setupAssetPaths() {
+        // Define base paths
+        const localFigPath = "figs/";
+        const remoteFigPath =
+          "https://neutrino137.github.io/my-figs-lib/figs-yolo/";
+        const localFontPath = "fonts/";
+        const remoteFontPath =
+          "https://neutrino137.github.io/my-fonts-lib/english/";
+
+        const figPath = isLocalMode ? localFigPath : remoteFigPath;
+        const fontPath = isLocalMode ? localFontPath : remoteFontPath;
+
+        // --- 1. DYNAMICALLY INJECT FONT CSS ---
+        const fontFaces = `
+
+                @font-face {
+                  font-family: 'optima';
+                  src: url('${fontPath}optima-regular-1.ttf') format('truetype');
+                }
+                @font-face {
+                  font-family: 'Italiana';
+                  src: url('${fontPath}Italiana-Regular.ttf') format('truetype');
+                }
+            `;
+        const styleElement = document.createElement("style");
+        styleElement.innerHTML = fontFaces;
+        document.head.appendChild(styleElement);
+
+        // --- 2. DYNAMICALLY SET FIGURE BACKGROUNDS and srcs ---
+        const figureElements = document.querySelectorAll("[data-fig-name]");
+        figureElements.forEach((el) => {
+          const figName = el.getAttribute("data-fig-name");
+          if (figName) {
+            const fullPath = figPath + figName;
+            // Check if the element is an IMG tag or a DIV
+            if (el.tagName.toLowerCase() === "img") {
+              el.src = fullPath;
+            } else {
+              el.style.backgroundImage = 'url("' + fullPath + '")';
+            }
+          }
+        });
+      }
+      // New: Image click to enlarge function
+      function enableImageMagnification() {
+        const revealContainer = document.querySelector(".reveal");
+
+        const removeMagnifiedOverlay = () => {
+          const overlay = document.querySelector(".magnify-overlay");
+          if (overlay) {
+            overlay.remove();
+          }
+        };
+
+        revealContainer.addEventListener("click", (event) => {
+          // Find the nearest ancestor that can serve as an image container
+          const container = event.target.closest(
+            ".static-figure-container, .magnifiable-container, .figure-with-caption"
+          );
+
+          if (container) {
+            // In the container, find the currently visible image
+            // In auto-animate, the visible image's opacity is not '0'
+            let visibleImg = container.querySelector(
+              'img:not([style*="opacity: 0"])'
+            );
+
+            // If it's a static container, or the selector above didn't find anything, use the first img as a fallback
+            if (!visibleImg) {
+              visibleImg = container.querySelector("img");
+            }
+
+            // Confirm this visible image is magnifiable
+            if (
+              visibleImg &&
+              visibleImg.classList.contains("magnifiable") &&
+              visibleImg.src
+            ) {
+              event.stopPropagation();
+              removeMagnifiedOverlay();
+
+              const overlay = document.createElement("div");
+              overlay.classList.add("magnify-overlay");
+
+              const magnifiedImage = document.createElement("img");
+              magnifiedImage.src = visibleImg.src;
+
+              overlay.appendChild(magnifiedImage);
+              document.body.appendChild(overlay);
+
+              overlay.addEventListener("click", () => {
+                overlay.remove();
+              });
+            }
+          }
+        });
+
+        Reveal.on("slidechanged", removeMagnifiedOverlay);
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            removeMagnifiedOverlay();
+          }
+        });
+      }
+
+      // Initialize Reveal.js
+      Reveal.initialize({
+        controls: true,
+        progress: false,
+        history: true,
+        center: true,
+        hash: true,
+        loop: false,
+        autoSlide: 0,
+        autoSlideStoppable: true,
+        transition: "slide",
+        backgroundTransition: "fade",
+        autoAnimateEasing: "ease-in-out",
+        autoAnimateDuration: 2.0,
+        autoAnimateUnmatched: true,
+        width: 1600,
+        height: 900,
+        margin: 0.04,
+        minScale: 0.05,
+        maxScale: 2.0,
+      });
+
+      // Setup assets after Reveal.js is ready to ensure DOM is available
+      Reveal.on("ready", (event) => {
+        setupAssetPaths();
+        enableImageMagnification();
+      });
+
+      // Global timer IDs
+      let easterEggDelayTimerId = null;
+      let countdownIntervalId = null;
+
+      // Generate blinking stars for the global background
+      function createGlobalStars() {
+        const starBg = document.getElementById("star-bg");
+        if (!starBg) return;
+        starBg.innerHTML = "";
+        const numberOfStars = 200;
+
+        for (let i = 0; i < numberOfStars; i++) {
+          let star = document.createElement("div");
+          star.className = "star";
+
+          let size = Math.random() * 2 + 1;
+          star.style.width = size + "px";
+          star.style.height = star.style.width;
+
+          star.style.top = Math.random() * 100 + "%";
+          star.style.left = Math.random() * 100 + "%";
+
+          star.style.animationDelay = Math.random() * 3 + "s";
+          star.style.animationDuration = Math.random() * 2 + 2 + "s";
+
+          starBg.appendChild(star);
+        }
+      }
+
+      // --- YOLO Easter Egg ---
+      function activateYoloMode() {
+        const starBg = document.getElementById("star-bg");
+        const stars = starBg.querySelectorAll(".star");
+
+        stars.forEach((star, index) => {
+          setTimeout(() => {
+            if (!document.querySelector('[data-state="credits-roll"].present'))
+              return; // Stop if slide changed
+            const box = document.createElement("div");
+            box.className = "yolo-box";
+
+            const padding = 6;
+            const size = star.offsetWidth;
+
+            box.style.left = `${star.offsetLeft - padding}px`;
+            box.style.top = `${star.offsetTop - padding}px`;
+            box.style.width = `${size + padding * 2}px`;
+            box.style.height = `${size + padding * 2}px`;
+
+            const label = document.createElement("div");
+            label.className = "yolo-label";
+            const confidence = (Math.random() * 0.15 + 0.84).toFixed(2);
+            label.textContent = `star ${confidence}`;
+
+            box.appendChild(label);
+            starBg.appendChild(box);
+
+            requestAnimationFrame(() => {
+              box.style.opacity = "1";
+            });
+          }, index * 25); // Staggered appearance
+        });
+      }
+
+      function deactivateYoloMode() {
+        const boxes = document.querySelectorAll(".yolo-box");
+        boxes.forEach((box) => box.remove());
+      }
+      
+      // Resets all timers and removes the easter egg effects.
+      function resetCreditsRoll() {
+        // Stop animation
+        const content = document.querySelector('.credits-content');
+        if (content) {
+            content.style.animation = 'none';
+        }
+
+        // Clear timers
+        if (easterEggDelayTimerId) {
+            clearTimeout(easterEggDelayTimerId);
+            easterEggDelayTimerId = null;
+        }
+        if (countdownIntervalId) {
+            clearInterval(countdownIntervalId);
+            countdownIntervalId = null;
+        }
+        const countdownEl = document.getElementById("yolo-countdown");
+        if (countdownEl) {
+            countdownEl.style.opacity = '0';
+        }
+        deactivateYoloMode();
+      }
+
+      // --- Credits Roll Logic ---
+      function startCreditsRoll() {
+        // Trigger animation
+        const content = document.querySelector('.credits-content');
+        if (content) {
+            content.style.animation = 'scroll-up-in-slide 25s linear forwards';
+        }
+
+        const startCountdown = () => {
+          const countdownEl = document.getElementById("yolo-countdown");
+          if (!countdownEl) return;
+
+          let count = 3;
+          countdownEl.textContent = count;
+          countdownEl.style.opacity = "1";
+
+          countdownIntervalId = setInterval(() => {
+            if (!document.querySelector('[data-state="credits-roll"].present')) {
+              clearInterval(countdownIntervalId);
+              return;
+            }
+            count--;
+            if (count > 0) {
+              countdownEl.textContent = count;
+            } else {
+              clearInterval(countdownIntervalId);
+              countdownIntervalId = null;
+              countdownEl.style.opacity = "0";
+              setTimeout(() => {
+                // Check if element exists before modifying it
+                const el = document.getElementById("yolo-countdown");
+                if (el) el.style.display = "none";
+                activateYoloMode();
+              }, 500);
+            }
+          }, 1000);
+        };
+
+        // Reset display style in case it was set to 'none' from a previous run
+        const countdownEl = document.getElementById("yolo-countdown");
+        if(countdownEl) countdownEl.style.display = 'block';
+
+        // Start the countdown after the scrolling animation finishes (25s)
+        easterEggDelayTimerId = setTimeout(startCountdown, 25000); 
+      }
+
+      // Create stars and set up slide change events when the presentation is ready
+      Reveal.on("ready", (event) => {
+        createGlobalStars();
+
+        Reveal.on("slidechanged", (event) => {
+          // Reset and stop when leaving the credits slide
+          if (
+            event.previousSlide &&
+            event.previousSlide.dataset.state === "credits-roll"
+          ) {
+            resetCreditsRoll();
+          }
+          // Start the roll and timers when entering the credits slide
+          if (event.currentSlide.dataset.state === "credits-roll") {
+            startCreditsRoll();
+          }
+        });
+
+        // Initial check in case the presentation loads on the credits slide
+        if (Reveal.getCurrentSlide().dataset.state === "credits-roll") {
+          startCreditsRoll();
+        }
+      });
+
+      // Gemini API Feature
+      const geminiButton = document.getElementById("gemini-trigger-button");
+      const geminiResponseContainer = document.getElementById(
+        "gemini-response-container"
+      );
+
+      if (geminiButton && geminiResponseContainer) {
+        geminiButton.addEventListener("click", async () => {
+          geminiResponseContainer.innerHTML =
+            '<div class="spinner"></div> Getting interpretation...';
+          geminiResponseContainer.classList.add("loading");
+          geminiButton.disabled = true;
+
+          const prompt =
+            "Imagine an astronomical object suggested by this visual (which might be a segment of a larger image, like a red cosmic structure). Describe this cosmic entity in a captivating and imaginative way suitable for a science presentation, in 2-3 short paragraphs. Make it sound wondrous and mysterious.";
+
+          try {
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = "";
+            const apiUrl =
+              "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" +
+              apiKey;
+
+            const response = await fetch(apiUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+              throw new Error("API request failed, status code: " + response.status);
+            }
+
+            const result = await response.json();
+
+            let text = "Sorry, a description could not be retrieved at this time.";
+            if (
+              result.candidates &&
+              result.candidates.length > 0 &&
+              result.candidates[0].content &&
+              result.candidates[0].content.parts &&
+              result.candidates[0].content.parts.length > 0
+            ) {
+              text = result.candidates[0].content.parts[0].text;
+              text = text
+                .split("\n\n")
+                .map((p) => "<p>" + p.replace(/\n/g, "<br>") + "</p>")
+                .join("");
+            }
+            geminiResponseContainer.innerHTML = text;
+          } catch (error) {
+            console.error("Error calling Gemini API:", error);
+            geminiResponseContainer.innerHTML =
+              "Error: " + error.message + " Please check the console.";
+          } finally {
+            geminiResponseContainer.classList.remove("loading");
+            geminiButton.disabled = false;
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
