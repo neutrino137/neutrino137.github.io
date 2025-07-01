@@ -16,13 +16,14 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
+            padding: 1rem;
+            box-sizing: border-box;
         }
 
         .journey-container {
-            width: 1200px;
-            max-width: 95%;
-            height: 750px;
+            width: 100%; /* Changed from 1200px to be fluid */
+            max-width: 1200px; /* Set a max-width for large screens */
+            aspect-ratio: 1200 / 750; /* Maintain aspect ratio */
             position: relative;
             background: #A7D3A7; /* Light green for grass */
             border-radius: 30px;
@@ -113,12 +114,30 @@
             display: block;
         }
 
-        /* Positioning for each city stop */
-        #stop-1 { top: 470px; left: 100px; } /* Moved from left: 50px */
-        #stop-2 { top: 280px; left: 350px; }
-        #stop-3 { top: 500px; left: 550px; }
-        #stop-4 { top: 300px; left: 850px; }
-        #stop-5 { top: 270px; left: 1050px; } /* Moved from left: 1100px and adjusted top */
+        /* Positioning for each city stop - now using percentages */
+        #stop-1 { top: 62.6%; left: 8.3%; }   /* 470/750, 100/1200 */
+        #stop-2 { top: 37.3%; left: 29.1%; }  /* 280/750, 350/1200 */
+        #stop-3 { top: 66.6%; left: 45.8%; }  /* 500/750, 550/1200 */
+        #stop-4 { top: 40%;   left: 70.8%; }  /* 300/750, 850/1200 */
+        #stop-5 { top: 36%;   left: 87.5%; }  /* 270/750, 1050/1200 */
+
+        /* Media Query for smaller screens (tablets and phones) */
+        @media (max-width: 768px) {
+            .stop .pin {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+            .stop .label {
+                font-size: 14px;
+                padding: 6px 12px;
+                margin-top: 10px;
+            }
+            .figure-popup img {
+                width: 120px;
+                height: 120px;
+            }
+        }
     </style>
 </head>
 <body>
