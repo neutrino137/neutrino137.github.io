@@ -1,0 +1,388 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Awesome Interactive City Trip!</title>
+    <style>
+        /* A fun, friendly font for the page */
+        @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&display=swap');
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Prevents scrollbars */
+        }
+
+        body {
+            font-family: 'Baloo 2', cursive;
+            background-color: #87CEEB; /* Sky Blue */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .journey-container {
+            width: 95vw; /* Use viewport width for adaptivity */
+            max-width: 1200px; /* Keep a max width for large screens */
+            aspect-ratio: 1200 / 750;
+            position: relative;
+            background: #A7D3A7; /* Light green for grass */
+            border-radius: 30px;
+            border: 10px solid white;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        /* The road path */
+        .road {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        /* Styling for the city stops */
+        .stop {
+            position: absolute;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .stop .pin {
+            width: clamp(35px, 3.75vw, 45px); /* Responsive pin size */
+            height: clamp(35px, 3.75vw, 45px);
+            background-color: #ff6b6b;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            margin: 0 auto;
+            border: clamp(3px, 0.3vw, 4px) solid white; /* Responsive border */
+            box-shadow: 4px 4px 8px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(16px, 1.6vw, 20px); /* Responsive font size */
+            color: white;
+            transition: transform 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        
+        .pin .pin-icon {
+             transform: rotate(45deg);
+        }
+
+        .stop .pin:hover {
+            transform: rotate(-45deg) scale(1.1);
+        }
+
+        .stop .label {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: clamp(6px, 0.7vw, 8px) clamp(12px, 1.3vw, 16px);
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: clamp(14px, 1.6vw, 20px);
+            color: #333;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* The image popup that appears */
+        .figure-popup {
+            position: absolute;
+            z-index: 4;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out, visibility 0.4s;
+            padding: 10px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+            transform: translate(-50%, -120%); /* Position above the pin */
+            pointer-events: none;
+        }
+
+        .figure-popup.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .figure-popup img {
+            width: clamp(120px, 12.5vw, 150px); /* Responsive image size */
+            height: clamp(120px, 12.5vw, 150px);
+            object-fit: cover;
+            border-radius: 5px;
+            display: block;
+        }
+
+        /* Positioning for each city stop - using percentages for responsiveness */
+        #stop-1 { top: 46.7%; left: 8.3%; }
+        #stop-2 { top: 16.7%; left: 29.2%; }
+        #stop-3 { top: 39.7%; left: 50%; }
+        #stop-4 { top: 65.7%; left: 68.8%; }
+        #stop-5 { top: 46.7%; left: 88.7%; }
+
+
+        /* Car styling */
+        #car {
+            position: absolute;
+            width: clamp(50px, 5vw, 60px); /* Responsive car size */
+            height: clamp(50px, 5vw, 60px);
+            background: url('https://img.icons8.com/color/48/000000/car.png') no-repeat center center;
+            background-size: contain;
+            z-index: 3;
+            opacity: 0; /* Car is hidden initially */
+            transition: opacity 0.5s ease;
+            /* transform is set by JS */
+        }
+
+        /* Start Button Styling */
+        #startButton {
+            position: fixed; /* Position relative to the viewport */
+            bottom: 20px;
+            right: 20px;
+            padding: clamp(8px, 1vw, 10px) clamp(16px, 2vw, 20px); /* Made padding smaller */
+            font-size: clamp(14px, 1.5vw, 16px); /* Made font smaller */
+            font-family: 'Baloo 2', cursive;
+            cursor: pointer;
+            border-radius: 12px; /* Adjusted border radius */
+            border: 2px solid white; /* Adjusted border */
+            background-color: #ff6b6b;
+            color: white;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* Adjusted shadow */
+            z-index: 10;
+            transition: all 0.2s ease;
+        }
+        #startButton:hover {
+            transform: scale(1.05);
+        }
+        #startButton:active {
+            transform: scale(0.95);
+        }
+        
+    </style>
+</head>
+<body>
+
+    <div class="journey-container">
+        <svg class="road" viewBox="0 0 1200 750" preserveAspectRatio="none">
+            <path id="road-path" d="M -20,550 Q 350,50 600,400 Q 850, 750 1300, 150" stroke="#696969" stroke-width="50" fill="none" />
+            <path d="M -20,550 Q 350,50 600,400 Q 850, 750 1300, 150" stroke="white" stroke-width="4" fill="none" stroke-dasharray="30 40" />
+        </svg>
+
+        <div id="car"></div>
+
+        <!-- City Stops and their Popups -->
+        <div id="stop-1" class="stop">
+            <div class="pin"><div class="pin-icon">A</div></div>
+            <div class="label">City A</div>
+            <div class="figure-popup" id="popup-1">
+                <img src="https://neutrino137.github.io/pictures/1.jpg" alt="Figure 1" onerror="this.src='https://placehold.co/180x180/f0f0f0/ccc?text=Image+1'">
+            </div>
+        </div>
+        <div id="stop-2" class="stop">
+            <div class="pin"><div class="pin-icon">B</div></div>
+            <div class="label">City B</div>
+            <div class="figure-popup" id="popup-2">
+                <img src="https://neutrino137.github.io/pictures/2.jpg" alt="Figure 2" onerror="this.src='https://placehold.co/180x180/f0f0f0/ccc?text=Image+2'">
+            </div>
+        </div>
+        <div id="stop-3" class="stop">
+            <div class="pin"><div class="pin-icon">C</div></div>
+            <div class="label">City C</div>
+            <div class="figure-popup" id="popup-3">
+                <img src="https://neutrino137.github.io/pictures/3.jpg" alt="Figure 3" onerror="this.src='https://placehold.co/180x180/f0f0f0/ccc?text=Image+3'">
+            </div>
+        </div>
+        <div id="stop-4" class="stop">
+            <div class="pin"><div class="pin-icon">D</div></div>
+            <div class="label">City D</div>
+            <div class="figure-popup" id="popup-4">
+                <img src="https://neutrino137.github.io/pictures/4.jpg" alt="Figure 4" onerror="this.src='https://placehold.co/180x180/f0f0f0/ccc?text=Image+4'">
+            </div>
+        </div>
+        <div id="stop-5" class="stop">
+            <div class="pin"><div class="pin-icon">E</div></div>
+            <div class="label">City E</div>
+            <div class="figure-popup" id="popup-5">
+                <img src="https://neutrino137.github.io/pictures/5.jpg" alt="Figure 5" onerror="this.src='https://placehold.co/180x180/f0f0f0/ccc?text=Image+5'">
+            </div>
+        </div>
+    </div>
+    
+    <button id="startButton">Start Journey</button>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- ELEMENT SELECTION ---
+            const car = document.getElementById('car');
+            const path = document.getElementById('road-path');
+            const svg = document.querySelector('.road');
+            const container = document.querySelector('.journey-container');
+            const allStops = document.querySelectorAll('.stop');
+            const startButton = document.getElementById('startButton'); // Get the button
+            
+            // --- ANIMATION & PATH SETUP ---
+            let totalPathLength = path.getTotalLength();
+            let stopsWithDistances = [];
+            let currentStopIndex = 0;
+            let currentDistance = 0;
+            const carSpeed = 2; 
+            let animationFrameId;
+
+            // --- SCALING FACTORS ---
+            let scaleX = 1, scaleY = 1;
+
+            // --- HELPER FUNCTIONS ---
+
+            /**
+             * Finds the length along the SVG path that is closest to a given point.
+             */
+            function getClosestPointOnPath(x, y) {
+                let minDistance = Infinity;
+                let closestLength = 0;
+                for (let i = 0; i < totalPathLength; i += 2) {
+                    const p = path.getPointAtLength(i);
+                    const dx = p.x - x;
+                    const dy = p.y - y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestLength = i;
+                    }
+                }
+                return closestLength;
+            }
+
+            /**
+             * Converts screen coordinates to the SVG's internal coordinate system.
+             */
+            function screenToSVGCoords(x, y) {
+                const pt = svg.createSVGPoint();
+                pt.x = x;
+                pt.y = y;
+                return pt.matrixTransform(svg.getScreenCTM().inverse());
+            }
+
+            // --- INITIALIZATION ---
+
+            /**
+             * Calculates the position of each stop and prepares the scene.
+             * This runs on load and on window resize.
+             */
+            function initializeScene() {
+                if(animationFrameId) cancelAnimationFrame(animationFrameId);
+
+                const containerRect = container.getBoundingClientRect();
+                const viewBox = svg.viewBox.baseVal;
+                scaleX = containerRect.width / viewBox.width;
+                scaleY = containerRect.height / viewBox.height;
+                totalPathLength = path.getTotalLength();
+
+                stopsWithDistances = [];
+                allStops.forEach(stop => {
+                    const pin = stop.querySelector('.pin');
+                    const pinRect = pin.getBoundingClientRect();
+                    const screenX = pinRect.left + pinRect.width / 2;
+                    const screenY = pinRect.top + pinRect.height / 2;
+                    const svgPoint = screenToSVGCoords(screenX, screenY);
+                    const distance = getClosestPointOnPath(svgPoint.x, svgPoint.y);
+                    stopsWithDistances.push({ element: stop, distance: distance });
+                });
+
+                stopsWithDistances.sort((a, b) => a.distance - b.distance);
+
+                // Reset car state
+                currentDistance = 0;
+                currentStopIndex = 0;
+                
+                // Position car at the start, but keep it hidden
+                const point = path.getPointAtLength(0);
+                const nextPoint = path.getPointAtLength(carSpeed);
+                const angle = Math.atan2((nextPoint.y - point.y) * scaleY, (nextPoint.x - point.x) * scaleX) * (180 / Math.PI);
+                car.style.opacity = '0';
+                car.style.left = `${point.x * scaleX}px`;
+                car.style.top = `${point.y * scaleY}px`;
+                car.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+
+                // Ensure start button is visible
+                startButton.textContent = 'Start Journey';
+                startButton.style.display = 'block';
+            }
+
+            // --- ANIMATION CORE ---
+
+            /**
+             * The main animation loop that drives the car.
+             */
+            function driveCar() {
+                // Drive until the car is off the screen
+                if (currentDistance > totalPathLength + 100) { 
+                    initializeScene(); // Reset for the next journey
+                    return;
+                }
+
+                currentDistance += carSpeed;
+                
+                const point = path.getPointAtLength(currentDistance);
+                const nextPoint = path.getPointAtLength(Math.min(currentDistance + carSpeed, totalPathLength));
+
+                const scaledX = point.x * scaleX;
+                const scaledY = point.y * scaleY;
+                const nextScaledX = nextPoint.x * scaleX;
+                const nextScaledY = nextPoint.y * scaleY;
+
+                const angle = Math.atan2(nextScaledY - scaledY, nextScaledX - scaledX) * (180 / Math.PI);
+
+                car.style.left = `${scaledX}px`;
+                car.style.top = `${scaledY}px`;
+                car.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+
+                // Check for stops only if we haven't passed them all
+                if (currentStopIndex < stopsWithDistances.length) {
+                    const nextStopData = stopsWithDistances[currentStopIndex];
+                    if (currentDistance >= nextStopData.distance) {
+                        const stopElement = nextStopData.element;
+                        const popup = stopElement.querySelector('.figure-popup');
+                        
+                        stopElement.style.zIndex = '5';
+                        popup.classList.add('active');
+                        currentStopIndex++;
+
+                        setTimeout(() => {
+                            popup.classList.remove('active');
+                            stopElement.style.zIndex = ''; 
+                            animationFrameId = requestAnimationFrame(driveCar);
+                        }, 3000);
+                        return; // Pause for the popup
+                    }
+                }
+                
+                animationFrameId = requestAnimationFrame(driveCar);
+            }
+
+            // --- EVENT LISTENERS ---
+            
+            // Set up the scene initially
+            initializeScene();
+            // Adjust scene on window resize
+            window.addEventListener('resize', initializeScene);
+
+            // Start the journey on button click
+            startButton.addEventListener('click', () => {
+                initializeScene(); // Reset state just in case
+                startButton.style.display = 'none'; // Hide button during the trip
+                car.style.opacity = '1'; // Show the car
+                driveCar(); // Start the animation
+            });
+        });
+    </script>
+</body>
+</html>
