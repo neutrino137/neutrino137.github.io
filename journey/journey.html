@@ -1,1 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Awesome Interactive City Trip!</title>
+    <style>
+        /* A fun, friendly font for the page */
+        @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&display=swap');
 
+        body {
+            margin: 0;
+            font-family: 'Baloo 2', cursive;
+            background-color: #87CEEB; /* Sky Blue */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .journey-container {
+            width: 1200px;
+            max-width: 95%;
+            height: 750px;
+            position: relative;
+            background: #A7D3A7; /* Light green for grass */
+            border-radius: 30px;
+            border: 10px solid white;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        /* The road path */
+        .road {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        /* Styling for the city stops */
+        .stop {
+            position: absolute;
+            z-index: 2;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .stop .pin {
+            width: 45px;
+            height: 45px;
+            background-color: #ff6b6b;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            margin: 0 auto;
+            border: 4px solid white;
+            box-shadow: 4px 4px 8px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            color: white;
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        .pin .pin-icon {
+             transform: rotate(45deg);
+        }
+
+        .stop:hover .pin {
+            transform: rotate(-45deg) scale(1.1);
+        }
+
+        .stop .label {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 20px;
+            color: #333;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* The image popup that appears on hover */
+        .figure-popup {
+            position: absolute;
+            z-index: 4;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out, visibility 0.4s;
+            padding: 10px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            transform: translate(-50%, -120%); /* Position above the pin */
+            pointer-events: none; /* Prevents the popup from interfering with the hover */
+        }
+
+        /* This is the new hover effect logic */
+        .stop:hover .figure-popup {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .figure-popup img {
+            width: 180px;
+            height: 180px;
+            object-fit: cover; /* This will scale the image to cover the square and crop any excess */
+            border-radius: 10px;
+            display: block;
+        }
+
+        /* Positioning for each city stop */
+        #stop-1 { top: 470px; left: 100px; } /* Moved from left: 50px */
+        #stop-2 { top: 280px; left: 350px; }
+        #stop-3 { top: 500px; left: 550px; }
+        #stop-4 { top: 300px; left: 850px; }
+        #stop-5 { top: 270px; left: 1050px; } /* Moved from left: 1100px and adjusted top */
+    </style>
+</head>
+<body>
+
+    <div class="journey-container">
+        <!-- The road path -->
+        <svg class="road" viewBox="0 0 1200 750" preserveAspectRatio="none">
+            <!-- The path has been adjusted to meet the new pin locations -->
+            <path id="road-path" d="M 100,500 C 250,200 450,600 650,450 S 850,200 1050,300" stroke="#696969" stroke-width="50" fill="none" />
+            <path d="M 100,500 C 250,200 450,600 650,450 S 850,200 1050,300" stroke="white" stroke-width="4" fill="none" stroke-dasharray="30 40" />
+        </svg>
+
+        <!-- City Stops and their Popups -->
+        <div id="stop-1" class="stop">
+            <div class="pin"><div class="pin-icon">A</div></div>
+            <div class="label">City A</div>
+            <div class="figure-popup" id="popup-1">
+                <img src="https://neutrino137.github.io/pictures/1.jpg" alt="Figure 1" onerror="this.src='https://placehold.co/180x180/f0f0f0/ccc?text=Image+1'">
+            </div>
+        </div>
+
+        <div id="stop-2" class="stop">
+            <div class="pin"><div class="pin-icon">B</div></div>
+            <div class="label">City B</div>
+            <div class="figure-popup" id="popup-2">
+                <img src="https://neutrino137.github.io/pictures/2.jpg" alt="Figure 2" onerror="this.src='https://placehold.co/180x180/f0f0f0/ccc?text=Image+2'">
+            </div>
+        </div>
+
+        <div id="stop-3" class="stop">
+            <div class="pin"><div class="pin-icon">C</div></div>
+            <div class="label">City C</div>
+            <div class="figure-popup" id="popup-3">
+                <img src="https://neutrino137.github.io/pictures/3.jpg" alt="Figure 3" onerror="this.src='https://placehold.co/180x180/f0f0f0/ccc?text=Image+3'">
+            </div>
+        </div>
+
+        <div id="stop-4" class="stop">
+            <div class="pin"><div class="pin-icon">D</div></div>
+            <div class="label">City D</div>
+            <div class="figure-popup" id="popup-4">
+                <img src="https://neutrino137.github.io/pictures/4.jpg" alt="Figure 4" onerror="this.src='https://placehold.co/180x180/f0f0f0/ccc?text=Image+4'">
+            </div>
+        </div>
+        
+        <div id="stop-5" class="stop">
+            <div class="pin"><div class="pin-icon">E</div></div>
+            <div class="label">City E</div>
+            <div class="figure-popup" id="popup-5">
+                <img src="https://neutrino137.github.io/pictures/5.jpg" alt="Figure 5" onerror="this.src='https://placehold.co/180x180/f0f0f0/ccc?text=Image+5'">
+            </div>
+        </div>
+
+    </div>
+    <!-- All JavaScript has been removed as it is no longer needed -->
+</body>
+</html>
