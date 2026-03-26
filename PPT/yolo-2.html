@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh">
   <head>
     <meta charset="utf-8" />
@@ -123,32 +123,37 @@
 
       /* Apply Exo 2 font and then your custom Chinese font as fallbacks */
       .reveal .slides {
-        font-family: "optima", "XiqueSong", "FZkai", "Noto Sans SC",
-          "Microsoft YaHei", "PingFang SC", sans-serif;
+        font-family:
+          "optima", "XiqueSong", "FZkai", "Noto Sans SC", "Microsoft YaHei",
+          "PingFang SC", sans-serif;
         --r-main-font-size: 24px;
       }
 
       .reveal .slides h1 {
-        font-family: "XiqueGuzidian", "Noto Sans SC", "Microsoft YaHei",
-          "PingFang SC", sans-serif;
+        font-family:
+          "XiqueGuzidian", "Noto Sans SC", "Microsoft YaHei", "PingFang SC",
+          sans-serif;
         font-size: 2em;
       }
 
       .reveal .slides h2 {
-        font-family: "Exo 2", "XiqueGuzidian", "Noto Sans SC", "Microsoft YaHei",
+        font-family:
+          "Exo 2", "XiqueGuzidian", "Noto Sans SC", "Microsoft YaHei",
           "PingFang SC", sans-serif;
         font-size: 1.6em;
       }
 
       .reveal .slides h3 {
-        font-family: "XiqueGuzidian", "Noto Sans SC", "Microsoft YaHei",
-          "PingFang SC", sans-serif;
+        font-family:
+          "XiqueGuzidian", "Noto Sans SC", "Microsoft YaHei", "PingFang SC",
+          sans-serif;
         font-size: 1.2em;
       }
 
       .reveal .slides h4 {
-        font-family: "XiqueGuzidian", "Noto Sans SC", "Microsoft YaHei",
-          "PingFang SC", sans-serif;
+        font-family:
+          "XiqueGuzidian", "Noto Sans SC", "Microsoft YaHei", "PingFang SC",
+          sans-serif;
         font-size: 0.8em;
       }
 
@@ -162,7 +167,6 @@
       .reveal .slides section.center-content {
         justify-content: center !important;
       }
-
 
       /* Starry background container for ALL slides */
       #star-bg {
@@ -734,7 +738,7 @@
         cursor: default; /* 放大后的图片恢复默认鼠标样式 */
       }
 
-            .credits-content h3 {
+      .credits-content h3 {
         font-size: 2.2em;
         color: #facc15; /* yellow-300 */
         margin-top: 60px;
@@ -749,7 +753,7 @@
 
       .credits-content .role {
         color: #9ca3af; /* gray-400 */
-        font-size: 1.0em;
+        font-size: 1em;
         margin-bottom: 25px;
       }
       .credits-content .funding-item {
@@ -775,14 +779,14 @@
         animation: scroll-up 35s;
         /* The animation is now applied via Javascript */
       }
-      
+
       @keyframes scroll-up-in-slide {
-          from {
-              top: 100%;
-          }
-          to {
-              top: -380%; /* Adjusted to ensure all content scrolls off screen */
-          }
+        from {
+          top: 100%;
+        }
+        to {
+          top: -380%; /* Adjusted to ensure all content scrolls off screen */
+        }
       }
 
       /* 淡入动画的关键帧 */
@@ -801,13 +805,16 @@
         color: #0a192f;
         border: none;
         padding: 8px 16px;
-        font-family: "Exo 2", "MyCustomChineseFont", "Noto Sans SC",
-          "Microsoft YaHei", "PingFang SC", sans-serif;
+        font-family:
+          "Exo 2", "MyCustomChineseFont", "Noto Sans SC", "Microsoft YaHei",
+          "PingFang SC", sans-serif;
         font-size: 0.7em;
         font-weight: bold;
         border-radius: 5px;
         cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.2s ease;
+        transition:
+          background-color 0.3s ease,
+          transform 0.2s ease;
         margin-top: 15px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       }
@@ -885,16 +892,18 @@
         font-size: 250px;
         font-weight: bold;
         color: #facc15;
-        text-shadow: 0 0 30px #facc15, 0 0 50px #facc15;
+        text-shadow:
+          0 0 30px #facc15,
+          0 0 50px #facc15;
         z-index: 100;
         opacity: 0;
         transition: opacity 0.5s ease-in-out;
         pointer-events: none;
       }
-      
+
       /* --- FIX for controls --- */
       .reveal .controls {
-          z-index: 101 !important;
+        z-index: 101 !important;
       }
 
       @keyframes spin {
@@ -957,76 +966,88 @@
           </div>
         </section>
 
-
-
-
         <section>
           <h2>CSST 在轨示意图</h2>
           <div class="static-figure-container">
-            <img
-              class="magnifiable"
-              data-fig-name="csst-in-orbits.jpg"
-  
-            />
+            <img class="magnifiable" data-fig-name="csst-in-orbits.jpg" />
           </div>
-         
-        </section>
-
-       <section>
-        <h2>CSST 内部设计</h2>
-      
-          <div class="static-figure-container">
-            <img
-              class="magnifiable"
-              data-fig-name="csst-2.png"
-            />
-          </div>
-         
         </section>
 
         <section>
-            <h2></h2>
+          <h2>CSST 内部设计</h2>
 
-            <div class="two-column-layout-fade">
-              <div class="figure-with-caption">
-                <div
-                  class="image-placeholder-2 magnifiable-container"
-                  data-id="image-left"
-                  style="width: 700px; height: 700px"
-                >
-                  <img
-                    class="magnifiable"
-                    data-fig-name="csst-focal.png"
-                    alt="Figure 1"
-                    style="opacity: 1"
-                  />
-                </div>
-  
-              </div>
-              <div class="figure-with-caption">
-                <div
-                  class="image-placeholder-2 magnifiable-container"
-                  data-id="image-right"
-                  style="width: 700px; height: 700px"
-                >
-                  <img
-                    class="magnifiable"
-                    data-fig-name="csst-spec.png"
-                    alt="Figure 2"
-                    style="opacity: 1"
-                  />
-                </div>
+          <div class="static-figure-container">
+            <img class="magnifiable" data-fig-name="csst-2.png" />
+          </div>
+        </section>
 
+        <section data-auto-animate>
+          <h2></h2>
+          <div class="two-column-layout-fade">
+            <div class="figure-with-caption">
+              <div
+                class="image-placeholder-2 magnifiable-container"
+                data-id="image-left"
+                style="width: 700px; height: 700px"
+              >
+                <img
+                  class="magnifiable"
+                  data-fig-name="csst-focal.png"
+                  alt="Figure 1"
+                  style="opacity: 1"
+                />
               </div>
             </div>
-          </section>
+            <div class="figure-with-caption">
+              <div
+                class="image-placeholder-2 magnifiable-container"
+                data-id="image-right"
+                style="width: 700px; height: 700px"
+              >
+                <img
+                  class="magnifiable"
+                  data-fig-name="csst-spec.png"
+                  alt="Figure 2"
+                  style="opacity: 0"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
 
-
-
-        
-
-
-
+        <section data-auto-animate>
+          <h2></h2>
+          <div class="two-column-layout-fade">
+            <div class="figure-with-caption">
+              <div
+                class="image-placeholder-2 magnifiable-container"
+                data-id="image-left"
+                style="width: 700px; height: 700px"
+              >
+                <img
+                  class="magnifiable"
+                  data-fig-name="csst-focal.png"
+                  alt="Figure 1"
+                  style="opacity: 1"
+                />
+              </div>
+            </div>
+            <div class="figure-with-caption">
+              <div
+                class="image-placeholder-2 magnifiable-container"
+                data-id="image-right"
+                style="width: 700px; height: 700px"
+              >
+                <img
+                  class="magnifiable"
+                  data-fig-name="csst-spec.png"
+                  alt="Figure 2"
+                  style="opacity: 1"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
 
         <section>
           <div class="mb-6 text-center">
@@ -1463,7 +1484,7 @@
                 </li>
                 <li class="flex items-start">
                   <p class="text-white text-2xl">
-                    跟常见目标不同，光谱的边缘模糊不清稀。
+                    跟常见目标不同，光谱的边缘模糊不清晰。
                   </p>
                 </li>
               </ul>
@@ -1598,7 +1619,7 @@
                     </li>
                     <li>
                       <i class="fas fa-minus-circle text-red-400 mr-2"></i
-                      >缺点：缺点：在拥挤场景精度可能略低
+                      >缺点：在拥挤场景精度可能略低
                     </li>
                   </ul>
                 </div>
@@ -2650,16 +2671,16 @@
                 在所有真实的“正例”中，被模型成功预测出来的比例。衡量模型是否“找得全”。
               </p>
             </div>
-             <div class="item-card">
-            <p class="text-blue-300 text-4xl">
-              <i class="fas fa-chart-line mr-2 text-blue-300"></i>mAP
-              (平均精度均值)
-            </p>
-            <p class="text-2xl">
-              mAP（mean Average
-              Precision）是衡量目标检测模型综合性能的核心指标。它通过计算每个类别下的平均精度（AP），然后对所有类别的AP值求平均得到。一个高mAP值意味着模型在所有类别上都具有高精确率和高召回率。AP为Precision-Recall曲线面积。
-            </p>
-          </div>
+            <div class="item-card">
+              <p class="text-blue-300 text-4xl">
+                <i class="fas fa-chart-line mr-2 text-blue-300"></i>mAP
+                (平均精度均值)
+              </p>
+              <p class="text-2xl">
+                mAP（mean Average
+                Precision）是衡量目标检测模型综合性能的核心指标。它通过计算每个类别下的平均精度（AP），然后对所有类别的AP值求平均得到。一个高mAP值意味着模型在所有类别上都具有高精确率和高召回率。AP为Precision-Recall曲线面积。
+              </p>
+            </div>
           </div>
         </section>
 
@@ -4445,77 +4466,128 @@
           </div>
         </section>
 
-<section>
-  <section>
-  <div class="w-full text-center mb-8">
-    <h1>YOLO的巨大优势：隐性解混叠</h1>
-  </div>
-</section>
+        <section>
+          <section>
+            <div class="w-full text-center mb-8">
+              <h1>YOLO的巨大优势：隐性解混叠</h1>
+            </div>
+          </section>
 
-<section>
-  <div class="mb-6 text-center">
-    <h2>混叠的星系光谱图像</h2>
-  </div>
-  <div class="static-figure-container">
-    <img class="magnifiable" data-fig-name="img_batch6_crop.jpg" alt="混叠的星系光谱图像" />
-  </div>
-</section>
+          <section>
+            <div class="mb-6 text-center">
+              <h2>混叠的星系光谱图像</h2>
+            </div>
+            <div class="static-figure-container">
+              <img
+                class="magnifiable"
+                data-fig-name="img_batch6_crop.jpg"
+                alt="混叠的星系光谱图像"
+              />
+            </div>
+          </section>
 
-<section data-auto-animate>
-    <div class="mb-6 text-center">
-      <h2 data-id="compare-title">对比：真值 vs 预测值</h2>
-    </div>
-    <div class="two-column-layout-fade">
-      
-      <div class="figure-with-caption">
-        <div class="image-placeholder-2 magnifiable-container" data-id="image-left" style="width: 650px; height: 650px;">
-          <img class="magnifiable" data-fig-name="img_gt_batch6_crop.jpg" alt="星系的位置和红移真值" style="opacity: 1;" />
-        </div>
-        <p class="slide-caption text-2xl" data-id="caption-left" style="opacity: 1;">
-          星系的位置和红移真值
-        </p>
-      </div>
+          <section data-auto-animate>
+            <div class="mb-6 text-center">
+              <h2 data-id="compare-title">对比：真值 vs 预测值</h2>
+            </div>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                  style="width: 650px; height: 650px"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="img_gt_batch6_crop.jpg"
+                    alt="星系的位置和红移真值"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption text-2xl"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  星系的位置和红移真值
+                </p>
+              </div>
 
-      <div class="figure-with-caption">
-        <div class="image-placeholder-2 magnifiable-container" data-id="image-right" style="width: 650px; height: 650px;">
-          <img class="magnifiable" data-fig-name="img_pred_batch6_crop.jpg" alt="星系的位置和红移预测值" style="opacity: 0;" />
-        </div>
-        <p class="slide-caption text-2xl" data-id="caption-right" style="opacity: 0;">
-          星系的位置和红移预测值
-        </p>
-      </div>
-      
-    </div>
-  </section>
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                  style="width: 650px; height: 650px"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="img_pred_batch6_crop.jpg"
+                    alt="星系的位置和红移预测值"
+                    style="opacity: 0"
+                  />
+                </div>
+                <p
+                  class="slide-caption text-2xl"
+                  data-id="caption-right"
+                  style="opacity: 0"
+                >
+                  星系的位置和红移预测值
+                </p>
+              </div>
+            </div>
+          </section>
 
-  <section data-auto-animate>
-    <div class="mb-6 text-center">
-      <h2 data-id="compare-title">对比：真值 vs 预测值</h2>
-    </div>
-    <div class="two-column-layout-fade">
-      
-      <div class="figure-with-caption">
-        <div class="image-placeholder-2 magnifiable-container" data-id="image-left" style="width: 650px; height: 650px;">
-          <img class="magnifiable" data-fig-name="img_gt_batch6_crop.jpg" alt="星系的位置和红移真值" style="opacity: 1;" />
-        </div>
-        <p class="slide-caption text-2xl" data-id="caption-left" style="opacity: 1;">
-          星系的位置和红移真值
-        </p>
-      </div>
+          <section data-auto-animate>
+            <div class="mb-6 text-center">
+              <h2 data-id="compare-title">对比：真值 vs 预测值</h2>
+            </div>
+            <div class="two-column-layout-fade">
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-left"
+                  style="width: 650px; height: 650px"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="img_gt_batch6_crop.jpg"
+                    alt="星系的位置和红移真值"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption text-2xl"
+                  data-id="caption-left"
+                  style="opacity: 1"
+                >
+                  星系的位置和红移真值
+                </p>
+              </div>
 
-      <div class="figure-with-caption">
-        <div class="image-placeholder-2 magnifiable-container" data-id="image-right" style="width: 650px; height: 650px;">
-          <img class="magnifiable" data-fig-name="img_pred_batch6_crop.jpg" alt="星系的位置和红移预测值" style="opacity: 1;" />
-        </div>
-        <p class="slide-caption text-2xl" data-id="caption-right" style="opacity: 1;">
-          星系的位置和红移预测值
-        </p>
-      </div>
-      
-    </div>
-  </section>
-</section>
-  
+              <div class="figure-with-caption">
+                <div
+                  class="image-placeholder-2 magnifiable-container"
+                  data-id="image-right"
+                  style="width: 650px; height: 650px"
+                >
+                  <img
+                    class="magnifiable"
+                    data-fig-name="img_pred_batch6_crop.jpg"
+                    alt="星系的位置和红移预测值"
+                    style="opacity: 1"
+                  />
+                </div>
+                <p
+                  class="slide-caption text-2xl"
+                  data-id="caption-right"
+                  style="opacity: 1"
+                >
+                  星系的位置和红移预测值
+                </p>
+              </div>
+            </div>
+          </section>
+        </section>
 
         <section>
           <h3>展望</h3>
@@ -4609,10 +4681,10 @@
             </div>
           </div>
         </section>
-                <section data-state="credits-roll">
-            <div class="credits-roll-container">
-                <div class="credits-content" style="transform: scale(0.85);">
-                    <h2 class="text-4xl font-bold text-yellow-300 mb-6">致谢</h2>
+        <section data-state="credits-roll">
+          <div class="credits-roll-container">
+            <div class="credits-content" style="transform: scale(0.85)">
+              <h2 class="text-4xl font-bold text-yellow-300 mb-6">致谢</h2>
               <div style="margin-top: 50px"></div>
 
               <h3>合作导师</h3>
@@ -4637,15 +4709,19 @@
 
               <h3>特别鸣谢</h3>
               <div style="margin-top: 50px"></div>
-              <p style="font-size:30pt">感谢所有参与CSST项目的科学家和工程师们，</p>
-              <p style="font-size:30pt">特别是那些在无缝光谱仿真和流水线做出贡献的同事们。</p>
-              <p style="font-size:30pt">他们使得在CSST发射前，</p>
-              <p style="font-size:30pt">科学预研究能顺利开展。</p>
+              <p style="font-size: 30pt">
+                感谢所有参与CSST项目的科学家和工程师们，
+              </p>
+              <p style="font-size: 30pt">
+                特别是那些在无缝光谱仿真和流水线做出贡献的同事们。
+              </p>
+              <p style="font-size: 30pt">他们使得在CSST发射前，</p>
+              <p style="font-size: 30pt">科学预研究能顺利开展。</p>
               <div style="margin-top: 50px"></div>
 
               <h3>资金支持</h3>
               <div style="margin-top: 50px"></div>
-              <p class="funding-item" style="font-size:30pt">
+              <p class="funding-item" style="font-size: 30pt">
                 本研究得到了北京市自然科学基金青年项目（No.
                 1244061）、中国载人航天工程空间科学与应用项目（No.
                 CMS-CSST-2021-B03）、国家重点研发计划（No.
@@ -4653,23 +4729,20 @@
               </p>
 
               <h3>技术支持</h3>
-              <p style="font-size:40pt">国家天文台Geranium高性能GPU计算集群</p>
+              <p style="font-size: 40pt">国家天文台Geranium高性能GPU计算集群</p>
 
               <h3></h3>
               <p class="text-gray-500 text-lg">--- The End ---</p>
-              <p class="text-gray-500" style="font-size:20pt">--- 结尾有彩蛋 ---</p>
+              <p class="text-gray-500" style="font-size: 20pt">
+                --- 结尾有彩蛋 ---
+              </p>
             </div>
           </div>
-                      <div id="yolo-countdown"></div>
+          <div id="yolo-countdown"></div>
         </section>
-
-
       </div>
     </div>
 
-
-      </div>
-    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
     <script>
       // --- MODE CONTROL ---
@@ -4742,14 +4815,14 @@
         revealContainer.addEventListener("click", (event) => {
           // 查找被点击元素最近的、可作为图片容器的祖先元素
           const container = event.target.closest(
-            ".static-figure-container, .magnifiable-container, .figure-with-caption"
+            ".static-figure-container, .magnifiable-container, .figure-with-caption",
           );
 
           if (container) {
             // 在容器内，找到那个当前可见的图片
             // 在自动动画中，可见图片的opacity不为 '0'
             let visibleImg = container.querySelector(
-              'img:not([style*="opacity: 0"])'
+              'img:not([style*="opacity: 0"])',
             );
 
             // 如果是静态容器，或者上面的选择器没找到，就用第一个img作为备选
@@ -4886,27 +4959,27 @@
         const boxes = document.querySelectorAll(".yolo-box");
         boxes.forEach((box) => box.remove());
       }
-      
+
       // Resets all timers and removes the easter egg effects.
       function resetCreditsRoll() {
         // Stop animation
-        const content = document.querySelector('.credits-content');
+        const content = document.querySelector(".credits-content");
         if (content) {
-            content.style.animation = 'none';
+          content.style.animation = "none";
         }
 
         // Clear timers
         if (easterEggDelayTimerId) {
-            clearTimeout(easterEggDelayTimerId);
-            easterEggDelayTimerId = null;
+          clearTimeout(easterEggDelayTimerId);
+          easterEggDelayTimerId = null;
         }
         if (countdownIntervalId) {
-            clearInterval(countdownIntervalId);
-            countdownIntervalId = null;
+          clearInterval(countdownIntervalId);
+          countdownIntervalId = null;
         }
         const countdownEl = document.getElementById("yolo-countdown");
         if (countdownEl) {
-            countdownEl.style.opacity = '0';
+          countdownEl.style.opacity = "0";
         }
         deactivateYoloMode();
       }
@@ -4914,9 +4987,9 @@
       // --- Credits Roll Logic ---
       function startCreditsRoll() {
         // Trigger animation
-        const content = document.querySelector('.credits-content');
+        const content = document.querySelector(".credits-content");
         if (content) {
-            content.style.animation = 'scroll-up-in-slide 25s linear forwards';
+          content.style.animation = "scroll-up-in-slide 25s linear forwards";
         }
 
         const startCountdown = () => {
@@ -4928,7 +5001,9 @@
           countdownEl.style.opacity = "1";
 
           countdownIntervalId = setInterval(() => {
-            if (!document.querySelector('[data-state="credits-roll"].present')) {
+            if (
+              !document.querySelector('[data-state="credits-roll"].present')
+            ) {
               clearInterval(countdownIntervalId);
               return;
             }
@@ -4951,10 +5026,10 @@
 
         // Reset display style in case it was set to 'none' from a previous run
         const countdownEl = document.getElementById("yolo-countdown");
-        if(countdownEl) countdownEl.style.display = 'block';
+        if (countdownEl) countdownEl.style.display = "block";
 
         // Start the countdown after the scrolling animation finishes (25s)
-        easterEggDelayTimerId = setTimeout(startCountdown, 25000); 
+        easterEggDelayTimerId = setTimeout(startCountdown, 25000);
       }
 
       // Create stars and set up slide change events when the presentation is ready
@@ -4984,7 +5059,7 @@
       // Gemini API Feature
       const geminiButton = document.getElementById("gemini-trigger-button");
       const geminiResponseContainer = document.getElementById(
-        "gemini-response-container"
+        "gemini-response-container",
       );
 
       if (geminiButton && geminiResponseContainer) {
